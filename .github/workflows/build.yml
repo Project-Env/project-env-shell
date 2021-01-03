@@ -18,11 +18,14 @@ jobs:
         os: [macos-latest, windows-latest, ubuntu-latest]
         include:
           - os: ubuntu-latest
+            asset_file: project-env-cli
             asset_name: project-env-cli-linux-amd64
           - os: windows-latest
+            asset_file: project-env-cli.exe
             asset_name: project-env-cli-windows-amd64.exe
             gu_executable_ext: .cmd
           - os: macos-latest
+            asset_file: project-env-cli
             asset_name: project-env-cli-macos-amd64
 
     steps:
@@ -41,11 +44,11 @@ jobs:
         with:
           maven-version: 3.6.3
 
-      - run: mvn -B -Dproject-env-cli-image-name="${{ matrix.asset_name }}" package
+      - run: mvn -B package
 
       - uses: svenstaro/upx-action@v2
         with:
-          file: target/${{ matrix.asset_name }}
+          file: target/${{ matrix.asset_file }}
           args: --best
 
       - uses: actions/upload-release-asset@v1
@@ -54,5 +57,5 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ github.event.release.upload_url }}
-          asset_path: target/${{ matrix.asset_name }}
+          asset_path: target/${{ matrix.asset_file }}
           asset_name: ${{ matrix.asset_name }}
