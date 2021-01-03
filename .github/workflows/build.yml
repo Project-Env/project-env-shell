@@ -1,0 +1,29 @@
+name: Build
+
+on:
+  push:
+    branches: [ master ]
+  workflow_dispatch:
+
+jobs:
+  build:
+
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      matrix:
+        os: [macos-latest, windows-latest, ubuntu-latest]
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - uses: DeLaGuardo/setup-graalvm@3.1
+        with:
+          graalvm-version: '20.3.0.java11'
+      - run: gu install native-image
+
+      - uses: stCarolas/setup-maven@v4
+        with:
+          maven-version: 3.6.3
+
+      - run: mvn -B package
