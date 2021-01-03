@@ -13,6 +13,9 @@ jobs:
     strategy:
       matrix:
         os: [macos-latest, windows-latest, ubuntu-latest]
+        include:
+          - os: windows-latest
+            GU_EXECUTABLE_EXT: .cmd
 
     steps:
       - uses: actions/checkout@v2
@@ -20,7 +23,7 @@ jobs:
       - uses: DeLaGuardo/setup-graalvm@3.1
         with:
           graalvm-version: '20.3.0.java11'
-      - run: gu install native-image
+      - run: gu${{matrix.GU_EXECUTABLE_EXT}} install native-image
 
       - uses: stCarolas/setup-maven@v4
         with:
