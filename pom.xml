@@ -9,6 +9,7 @@
 
     <properties>
         <revision>dev</revision>
+        <project-env-cli-image-name>project-env-cli</project-env-cli-image-name>
 
         <maven.compiler.release>11</maven.compiler.release>
 
@@ -132,7 +133,7 @@
                 <configuration>
                     <buildArgs>--enable-url-protocols=https --no-fallback</buildArgs>
                     <mainClass>ch.repolevedavaj.projectenv.cli.ProjectEnvCli</mainClass>
-                    <imageName>project-env-cli</imageName>
+                    <imageName>${project-env-cli-image-name}</imageName>
                 </configuration>
             </plugin>
         </plugins>

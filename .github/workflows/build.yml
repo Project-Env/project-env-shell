@@ -3,6 +3,9 @@ name: Build
 on:
   push:
     branches: [ master ]
+  release:
+    types:
+      - created
   workflow_dispatch:
 
 jobs:
@@ -14,8 +17,13 @@ jobs:
       matrix:
         os: [macos-latest, windows-latest, ubuntu-latest]
         include:
+          - os: ubuntu-latest
+            asset_name: project-env-cli-linux-amd64
           - os: windows-latest
-            GU_EXECUTABLE_EXT: .cmd
+            asset_name: project-env-cli-windows-amd64.exe
+            gu_executable_ext: .cmd
+          - os: macos-latest
+            asset_name: project-env-cli-macos-amd64
 
     steps:
       - uses: actions/checkout@v2
@@ -23,10 +31,24 @@ jobs:
       - uses: DeLaGuardo/setup-graalvm@3.1
         with:
           graalvm-version: '20.3.0.java11'
-      - run: gu${{matrix.GU_EXECUTABLE_EXT}} install native-image
+      - run: gu${{ matrix.gu_executable_ext }} install native-image
 
       - uses: stCarolas/setup-maven@v4
         with:
           maven-version: 3.6.3
 
-      - run: mvn -B package
+      - run: mvn -B -Dproject-env-cli-image-name=${{ matrix.asset_name }} package
+
+      - uses: svenstaro/upx-action@v2
+        with:
+          file: target/${{ matrix.asset_name }}
+          args: --best
+
+      - uses: actions/upload-release-asset@v1
+        if: ${{ github.event_name == 'release'}}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ github.event.release.upload_url }}
+          asset_path: target/${{ matrix.asset_name }}
+          asset_name: ${{ matrix.asset_name }}
