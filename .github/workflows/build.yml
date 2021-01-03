@@ -37,7 +37,7 @@ jobs:
         with:
           maven-version: 3.6.3
 
-      - run: mvn -B -Dproject-env-cli-image-name=${{ matrix.asset_name }} package
+      - run: mvn -B -Dproject-env-cli-image-name="${{ matrix.asset_name }}" package
 
       - uses: svenstaro/upx-action@v2
         with:
