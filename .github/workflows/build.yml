@@ -5,7 +5,7 @@ on:
     branches: [ master ]
   release:
     types:
-      - created
+      - unpublished
   workflow_dispatch:
 
 jobs:
@@ -46,10 +46,11 @@ jobs:
 
       - run: mvn -B package
 
-      - uses: svenstaro/upx-action@v2
-        with:
-          file: target/${{ matrix.asset_file }}
-          args: --best
+      # currently, the compression fails on macos
+      # - uses: svenstaro/upx-action@v2
+      #   with:
+      #     file: target/${{ matrix.asset_file }}
+      #     args: --best
 
       - uses: actions/upload-release-asset@v1
         if: ${{ github.event_name == 'release'}}
