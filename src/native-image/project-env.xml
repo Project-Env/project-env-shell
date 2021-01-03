@@ -38,7 +38,7 @@
                 <name>node</name>
                 <download-uris>
                     <macos>https://nodejs.org/dist/v14.15.3/node-v14.15.3-darwin-x64.tar.gz</macos>
-                    <windows>https://nodejs.org/dist/v14.15.3/node-v14.15.3-win-x64.zip</windows>
+                    <windows>https://nodejs.org/dist/v14.15.3/node-v14.15.3-win-x86.zip</windows>
                     <linux>https://nodejs.org/dist/v14.15.3/node-v14.15.3-linux-x64.tar.xz</linux>
                 </download-uris>
                 <post-installation-commands>
