@@ -1,7 +1,7 @@
 package ch.projectenv.shell.template;
 
-import ch.repolevedavaj.projectenv.core.toolinfo.MavenInfo;
-import ch.repolevedavaj.projectenv.core.toolinfo.ToolInfo;
+import ch.projectenv.core.toolinfo.MavenInfo;
+import ch.projectenv.core.toolinfo.ToolInfo;
 import com.mitchellbosecke.pebble.PebbleEngine;
 import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.extension.AbstractExtension;

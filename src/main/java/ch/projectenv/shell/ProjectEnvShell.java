@@ -1,10 +1,10 @@
 package ch.projectenv.shell;
 
+import ch.projectenv.core.configuration.ProjectEnvConfiguration;
+import ch.projectenv.core.configuration.ProjectEnvConfigurationFactory;
+import ch.projectenv.core.installer.ToolInstallers;
+import ch.projectenv.core.toolinfo.ToolInfo;
 import ch.projectenv.shell.template.TemplateProcessor;
-import ch.repolevedavaj.projectenv.core.configuration.ProjectEnvConfiguration;
-import ch.repolevedavaj.projectenv.core.configuration.ProjectEnvConfigurationFactory;
-import ch.repolevedavaj.projectenv.core.installer.ToolInstallers;
-import ch.repolevedavaj.projectenv.core.toolinfo.ToolInfo;
 import org.apache.commons.io.FileUtils;
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
