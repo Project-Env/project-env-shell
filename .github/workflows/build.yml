@@ -18,15 +18,15 @@ jobs:
         os: [macos-latest, windows-latest, ubuntu-latest]
         include:
           - os: ubuntu-latest
-            asset_file: project-env-cli
-            asset_name: project-env-cli-linux-amd64
+            asset_file: project-env-shell
+            asset_name: project-env-shell-linux-amd64
           - os: windows-latest
-            asset_file: project-env-cli.exe
-            asset_name: project-env-cli-windows-amd64.exe
+            asset_file: project-env-shell.exe
+            asset_name: project-env-shell-windows-amd64.exe
             gu_executable_ext: .cmd
           - os: macos-latest
-            asset_file: project-env-cli
-            asset_name: project-env-cli-macos-amd64
+            asset_file: project-env-shell
+            asset_name: project-env-shell-macos-amd64
 
     steps:
 

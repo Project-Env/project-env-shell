@@ -122,7 +122,7 @@
                                 <argument>-agentlib:native-image-agent=config-output-dir=${project.build.outputDirectory}/META-INF/native-image</argument>
                                 <argument>ch.projectenv.shell.ProjectEnvShell</argument>
                                 <argument>--config-file=${project.basedir}/src/native-image/project-env.yml</argument>
-                                <argument>--output-mode=INTERACTIVE_SHELL</argument>
+                                <argument>--output-template=zsh.peb</argument>
                                 <argument>--output-file=${project.build.directory}/.project-env</argument>
                             </arguments>
                             <workingDirectory>${project.build.directory}</workingDirectory>
@@ -145,7 +145,7 @@
                 <configuration>
                     <buildArgs>--enable-url-protocols=https --no-fallback</buildArgs>
                     <mainClass>ch.projectenv.shell.ProjectEnvShell</mainClass>
-                    <imageName>project-env-cli</imageName>
+                    <imageName>project-env-shell</imageName>
                 </configuration>
             </plugin>
         </plugins>
