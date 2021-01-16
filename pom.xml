@@ -15,10 +15,12 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
-        <project-env-core.version>0.0.11</project-env-core.version>
+        <project-env-core.version>0.0.13</project-env-core.version>
         <picocli.version>4.6.0</picocli.version>
         <graalvm.version>20.3.0</graalvm.version>
         <junit-jupiter.version>5.7.0</junit-jupiter.version>
+        <pebble.version>3.1.4</pebble.version>
+        <slf4j.version>1.7.30</slf4j.version>
 
         <flatten-maven-plugin.version>1.2.5</flatten-maven-plugin.version>
         <maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>
@@ -32,7 +34,18 @@
         <dependency>
             <groupId>ch.repolevedavaj.projectenv</groupId>
             <artifactId>core</artifactId>
-            <version>${project-env-core.version}</version>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>io.pebbletemplates</groupId>
+            <artifactId>pebble</artifactId>
+            <version>${pebble.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-simple</artifactId>
+            <version>${slf4j.version}</version>
         </dependency>
 
         <dependency>
@@ -107,8 +120,8 @@
                                 <argument>-classpath</argument>
                                 <classpath/>
                                 <argument>-agentlib:native-image-agent=config-output-dir=${project.build.outputDirectory}/META-INF/native-image</argument>
-                                <argument>ch.repolevedavaj.projectenv.cli.ProjectEnvCli</argument>
-                                <argument>--config-file=${project.basedir}/src/native-image/project-env.xml</argument>
+                                <argument>ch.projectenv.shell.ProjectEnvShell</argument>
+                                <argument>--config-file=${project.basedir}/src/native-image/project-env.yml</argument>
                                 <argument>--output-mode=INTERACTIVE_SHELL</argument>
                                 <argument>--output-file=${project.build.directory}/.project-env</argument>
                             </arguments>
@@ -131,7 +144,7 @@
                 </executions>
                 <configuration>
                     <buildArgs>--enable-url-protocols=https --no-fallback</buildArgs>
-                    <mainClass>ch.repolevedavaj.projectenv.cli.ProjectEnvCli</mainClass>
+                    <mainClass>ch.projectenv.shell.ProjectEnvShell</mainClass>
                     <imageName>project-env-cli</imageName>
                 </configuration>
             </plugin>

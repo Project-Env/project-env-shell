@@ -1,0 +1,22 @@
+#!/bin/zsh
+{% for tool in tools %}
+
+# {{ tool.toolName }}
+
+{% for environmentVariable in tool.environmentVariables %}
+export {{ environmentVariable.key }}="{{ environmentVariable.value.canonicalPath }}"
+{% endfor %}
+{% for pathElement in tool.pathElements %}
+export PATH="{{ pathElement.canonicalPath }}:$PATH"
+{% endfor %}
+{% if tool is maven and (tool.globalSettingsFile.present or tool.userSettingsFile.present) %}
+{% set mavenAlias = "mvn" %}
+{% if tool.globalSettingsFile.present %}
+{% set mavenAlias = mavenAlias + " -gs " + tool.globalSettingsFile.get.canonicalPath %}
+{% endif %}
+{% if tool.userSettingsFile.present %}
+{% set mavenAlias = mavenAlias + " -s " + tool.userSettingsFile.get.canonicalPath %}
+{% endif %}
+alias mvn="{{ mavenAlias }}"
+{% endif %}
+{% endfor %}

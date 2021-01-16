@@ -1,0 +1,12 @@
+#!/bin/bash
+{% for tool in tools %}
+
+# {{ tool.toolName }}
+
+{% for environmentVariable in tool.environmentVariables %}
+echo "{{ environmentVariable.key }}={{ environmentVariable.value.canonicalPath }}" >> $GITHUB_ENV
+{% endfor %}
+{% for pathElement in tool.pathElements %}
+echo "{{ pathElement.canonicalPath }}" >> $GITHUB_PATH
+{% endfor %}
+{% endfor %}
