@@ -36,9 +36,7 @@ public class ProjectEnvShell implements Callable<Integer> {
     public Integer call() throws Exception {
         ProjectEnvConfiguration projectEnvConfiguration = ProjectEnvConfigurationFactory.createFromFile(configFile);
 
-        File toolsDirectory = new File(projectEnvConfiguration.getToolsConfiguration().getToolsDirectory());
-
-        List<ToolInfo> toolInfos = ToolInstallers.installAllTools(projectEnvConfiguration, toolsDirectory);
+        List<ToolInfo> toolInfos = ToolInstallers.installAllTools(projectEnvConfiguration, new File("."));
 
         writeOutput(toolInfos);
 
