@@ -119,7 +119,7 @@
                             <arguments>
                                 <argument>-classpath</argument>
                                 <classpath/>
-                                <argument>-agentlib:native-image-agent=config-output-dir=${project.build.outputDirectory}/META-INF/native-image</argument>
+                                <argument>-agentlib:native-image-agent=config-output-dir=${project.build.outputDirectory}/META-INF/native-image/project-env-shell-generated</argument>
                                 <argument>ch.projectenv.shell.ProjectEnvShell</argument>
                                 <argument>--config-file=${project.basedir}/src/native-image/project-env.yml</argument>
                                 <argument>--output-template=zsh.peb</argument>
