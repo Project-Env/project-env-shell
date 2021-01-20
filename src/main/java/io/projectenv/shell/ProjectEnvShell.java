@@ -1,10 +1,10 @@
-package ch.projectenv.shell;
+package io.projectenv.shell;
 
-import ch.projectenv.core.configuration.ProjectEnvConfiguration;
-import ch.projectenv.core.configuration.ProjectEnvConfigurationFactory;
-import ch.projectenv.core.installer.ToolInstallers;
-import ch.projectenv.core.toolinfo.ToolInfo;
-import ch.projectenv.shell.template.TemplateProcessor;
+import io.projectenv.core.configuration.ProjectEnvConfiguration;
+import io.projectenv.core.configuration.ProjectEnvConfigurationFactory;
+import io.projectenv.core.installer.ToolInstallers;
+import io.projectenv.core.toolinfo.ToolInfo;
+import io.projectenv.shell.template.TemplateProcessor;
 import org.apache.commons.io.FileUtils;
 import picocli.CommandLine;
 import picocli.CommandLine.Command;

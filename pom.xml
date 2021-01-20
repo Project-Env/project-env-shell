@@ -3,7 +3,7 @@
 
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>ch.projectenv</groupId>
+    <groupId>io.projectenv</groupId>
     <artifactId>shell</artifactId>
     <version>${revision}</version>
 
@@ -15,7 +15,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
-        <project-env-core.version>0.0.18</project-env-core.version>
+        <project-env-core.version>1.0.0</project-env-core.version>
         <picocli.version>4.6.0</picocli.version>
         <graalvm.version>20.3.0</graalvm.version>
         <junit-jupiter.version>5.7.0</junit-jupiter.version>
@@ -32,7 +32,7 @@
 
     <dependencies>
         <dependency>
-            <groupId>ch.projectenv</groupId>
+            <groupId>io.projectenv</groupId>
             <artifactId>core</artifactId>
             <version>${project-env-core.version}</version>
         </dependency>
@@ -120,7 +120,7 @@
                                 <argument>-classpath</argument>
                                 <classpath/>
                                 <argument>-agentlib:native-image-agent=config-output-dir=${project.build.outputDirectory}/META-INF/native-image/project-env-shell-generated</argument>
-                                <argument>ch.projectenv.shell.ProjectEnvShell</argument>
+                                <argument>io.projectenv.shell.ProjectEnvShell</argument>
                                 <argument>--config-file=${project.basedir}/src/native-image/project-env.yml</argument>
                                 <argument>--output-template=zsh.peb</argument>
                                 <argument>--output-file=${project.build.directory}/.project-env</argument>
@@ -144,7 +144,7 @@
                 </executions>
                 <configuration>
                     <buildArgs>--enable-url-protocols=https --no-fallback</buildArgs>
-                    <mainClass>ch.projectenv.shell.ProjectEnvShell</mainClass>
+                    <mainClass>io.projectenv.shell.ProjectEnvShell</mainClass>
                     <imageName>project-env-shell</imageName>
                 </configuration>
             </plugin>

@@ -1,7 +1,7 @@
-package ch.projectenv.shell.template;
+package io.projectenv.shell.template;
 
-import ch.projectenv.core.toolinfo.MavenInfo;
-import ch.projectenv.core.toolinfo.ToolInfo;
+import io.projectenv.core.toolinfo.MavenInfo;
+import io.projectenv.core.toolinfo.ToolInfo;
 import com.mitchellbosecke.pebble.PebbleEngine;
 import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.extension.AbstractExtension;
