@@ -4,18 +4,18 @@
 # {{ tool.toolName }}
 
 {% for environmentVariable in tool.environmentVariables %}
-export {{ environmentVariable.key }}="{{ environmentVariable.value.canonicalPath }}"
+export {{ environmentVariable.key }}="{{ environmentVariable.value }}"
 {% endfor %}
 {% for pathElement in tool.pathElements %}
-export PATH="{{ pathElement.canonicalPath }}:$PATH"
+export PATH="{{ pathElement }}:$PATH"
 {% endfor %}
-{% if tool is maven and (tool.globalSettingsFile.present or tool.userSettingsFile.present) %}
+{% if tool.isMaven and (tool.globalSettingsFile != null or tool.userSettingsFile != null) %}
 {% set mavenAlias = "mvn" %}
-{% if tool.globalSettingsFile.present %}
-{% set mavenAlias = mavenAlias + " -gs " + tool.globalSettingsFile.get.canonicalPath %}
+{% if tool.globalSettingsFile != null %}
+{% set mavenAlias = mavenAlias + " -gs " + tool.globalSettingsFile %}
 {% endif %}
-{% if tool.userSettingsFile.present %}
-{% set mavenAlias = mavenAlias + " -s " + tool.userSettingsFile.get.canonicalPath %}
+{% if tool.userSettingsFile != null %}
+{% set mavenAlias = mavenAlias + " -s " + tool.userSettingsFile %}
 {% endif %}
 alias mvn="{{ mavenAlias }}"
 {% endif %}

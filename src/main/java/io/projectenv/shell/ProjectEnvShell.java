@@ -44,7 +44,7 @@ public class ProjectEnvShell implements Callable<Integer> {
     }
 
     private void writeOutput(List<ToolInfo> toolInfos) throws Exception {
-        String content = new TemplateProcessor().processTemplate(outputTemplate, toolInfos);
+        String content = TemplateProcessor.processTemplate(outputTemplate, toolInfos);
 
         FileUtils.write(outputFile, content, StandardCharsets.UTF_8);
         outputFile.setExecutable(true);
