@@ -16,7 +16,7 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
         <project-env-core.version>1.0.0</project-env-core.version>
-        <picocli.version>4.6.0</picocli.version>
+        <picocli.version>4.6.1</picocli.version>
         <graalvm.version>21.0.0</graalvm.version>
         <junit-jupiter.version>5.7.0</junit-jupiter.version>
         <pebble.version>3.1.4</pebble.version>
