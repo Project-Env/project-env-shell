@@ -33,16 +33,18 @@ public class ProjectEnvShell implements Callable<Integer> {
     @Option(names = {"--output-file"}, required = true)
     private File outputFile;
 
+    @Option(names = {"--project-root"}, defaultValue = ".")
+    private File projectRoot;
+
     public static void main(String[] args) {
-        int exitCode = new CommandLine(new ProjectEnvShell()).execute(args);
-        System.exit(exitCode);
+        new CommandLine(new ProjectEnvShell()).execute(args);
     }
 
     @Override
     public Integer call() throws Exception {
         ProjectEnvConfiguration projectEnvConfiguration = ProjectEnvConfigurationFactory.createFromFile(configFile);
 
-        List<ToolInfo> toolInfos = ToolInstallers.installAllTools(projectEnvConfiguration, new File("."));
+        List<ToolInfo> toolInfos = ToolInstallers.installAllTools(projectEnvConfiguration, projectRoot);
 
         writeOutput(toolInfos);
 
