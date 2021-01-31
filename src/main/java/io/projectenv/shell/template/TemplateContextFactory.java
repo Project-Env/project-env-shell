@@ -18,10 +18,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-public class TemplateContextFactory {
+public final class TemplateContextFactory {
 
     private static final TypeReference<List<Map<String, Object>>> TOOLS_CONTEXT_TYPE = new TypeReference<>() {
     };
+
+    private TemplateContextFactory() {
+        // noop
+    }
 
     public static Map<String, Object> createContext(List<ToolInfo> toolInfo) {
         SimpleModule module = new SimpleModule();
@@ -38,6 +42,7 @@ public class TemplateContextFactory {
 
     private static class ToolInfoBeanSerializerModifier extends BeanSerializerModifier {
 
+        @SuppressWarnings("unchecked")
         @Override
         public JsonSerializer<?> modifySerializer(SerializationConfig config, BeanDescription beanDesc, JsonSerializer<?> serializer) {
             if (beanDesc.getType().isTypeOrSubTypeOf(ToolInfo.class)) {

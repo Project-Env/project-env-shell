@@ -6,18 +6,23 @@ import io.projectenv.core.toolinfo.ToolInfo;
 import org.apache.commons.lang3.ClassPathUtils;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.util.List;
 
-public class TemplateProcessor {
+public final class TemplateProcessor {
 
     private static final PebbleEngine PEBBLE_ENGINE = new PebbleEngine
             .Builder()
             .strictVariables(true)
             .build();
 
-    public static String processTemplate(String template, List<ToolInfo> toolInfos) throws Exception {
+    private TemplateProcessor() {
+        // noop
+    }
+
+    public static String processTemplate(String template, List<ToolInfo> toolInfos) throws IOException {
         PebbleTemplate compiledTemplate = PEBBLE_ENGINE.getTemplate(resolveTemplate(template));
 
         Writer writer = new StringWriter();

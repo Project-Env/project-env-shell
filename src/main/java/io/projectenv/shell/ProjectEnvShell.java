@@ -1,22 +1,28 @@
 package io.projectenv.shell;
 
+import io.projectenv.core.common.OperatingSystem;
 import io.projectenv.core.configuration.ProjectEnvConfiguration;
 import io.projectenv.core.configuration.ProjectEnvConfigurationFactory;
 import io.projectenv.core.installer.ToolInstallers;
 import io.projectenv.core.toolinfo.ToolInfo;
 import io.projectenv.shell.template.TemplateProcessor;
 import org.apache.commons.io.FileUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.concurrent.Callable;
 
 @Command(name = "project-env-shell")
 public class ProjectEnvShell implements Callable<Integer> {
+
+    private final Logger log = LoggerFactory.getLogger(getClass());
 
     @Option(names = {"--config-file"}, required = true)
     private File configFile;
@@ -27,7 +33,7 @@ public class ProjectEnvShell implements Callable<Integer> {
     @Option(names = {"--output-file"}, required = true)
     private File outputFile;
 
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args) {
         int exitCode = new CommandLine(new ProjectEnvShell()).execute(args);
         System.exit(exitCode);
     }
@@ -43,11 +49,14 @@ public class ProjectEnvShell implements Callable<Integer> {
         return 0;
     }
 
-    private void writeOutput(List<ToolInfo> toolInfos) throws Exception {
+    private void writeOutput(List<ToolInfo> toolInfos) throws IOException {
         String content = TemplateProcessor.processTemplate(outputTemplate, toolInfos);
 
         FileUtils.write(outputFile, content, StandardCharsets.UTF_8);
-        outputFile.setExecutable(true);
+
+        if (OperatingSystem.getCurrentOS() != OperatingSystem.WINDOWS && !outputFile.setExecutable(true)) {
+            log.warn("failed to make file '{}' executable", outputFile.getCanonicalPath());
+        }
     }
 
 }
