@@ -28,6 +28,8 @@
         <maven-resources-plugin.version>3.2.0</maven-resources-plugin.version>
         <exec-maven-plugin.version>3.0.0</exec-maven-plugin.version>
         <maven-deploy-plugin.version>3.0.0-M1</maven-deploy-plugin.version>
+        <sonar-maven-plugin.version>3.8.0.2131</sonar-maven-plugin.version>
+        <jacoco-maven-plugin.version>0.8.6</jacoco-maven-plugin.version>
     </properties>
 
     <dependencies>
@@ -81,6 +83,107 @@
         </dependency>
     </dependencies>
 
+
+    <profiles>
+        <profile>
+            <id>sonar</id>
+            <properties>
+                <sonar.projectKey>Project-Env_project-env-shell</sonar.projectKey>
+                <sonar.organization>project-env</sonar.organization>
+                <sonar.host.url>https://sonarcloud.io</sonar.host.url>
+            </properties>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.jacoco</groupId>
+                        <artifactId>jacoco-maven-plugin</artifactId>
+                        <version>${jacoco-maven-plugin.version}</version>
+                        <executions>
+                            <execution>
+                                <id>prepare-agent</id>
+                                <goals>
+                                    <goal>prepare-agent</goal>
+                                </goals>
+                            </execution>
+                            <execution>
+                                <id>create-report</id>
+                                <goals>
+                                    <goal>report</goal>
+                                </goals>
+                                <phase>prepare-package</phase>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.sonarsource.scanner.maven</groupId>
+                        <artifactId>sonar-maven-plugin</artifactId>
+                        <version>${sonar-maven-plugin.version}</version>
+                        <executions>
+                            <execution>
+                                <goals>
+                                    <goal>sonar</goal>
+                                </goals>
+                                <phase>verify</phase>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>native-image</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>exec-maven-plugin</artifactId>
+                        <version>${exec-maven-plugin.version}</version>
+                        <executions>
+                            <execution>
+                                <id>execute-project-env-with-graalvm</id>
+                                <goals>
+                                    <goal>exec</goal>
+                                </goals>
+                                <phase>prepare-package</phase>
+                                <configuration>
+                                    <executable>java</executable>
+                                    <arguments>
+                                        <argument>-classpath</argument>
+                                        <classpath/>
+                                        <argument>-agentlib:native-image-agent=config-output-dir=${project.build.outputDirectory}/META-INF/native-image/project-env-shell-generated</argument>
+                                        <argument>io.projectenv.shell.ProjectEnvShell</argument>
+                                        <argument>--config-file=${project.basedir}/src/native-image/project-env.yml</argument>
+                                        <argument>--output-template=zsh.peb</argument>
+                                        <argument>--output-file=${project.build.directory}/.project-env</argument>
+                                    </arguments>
+                                    <workingDirectory>${project.build.directory}</workingDirectory>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.graalvm.nativeimage</groupId>
+                        <artifactId>native-image-maven-plugin</artifactId>
+                        <version>${graalvm.version}</version>
+                        <executions>
+                            <execution>
+                                <goals>
+                                    <goal>native-image</goal>
+                                </goals>
+                                <phase>package</phase>
+                            </execution>
+                        </executions>
+                        <configuration>
+                            <buildArgs>--enable-url-protocols=https --no-fallback</buildArgs>
+                            <mainClass>io.projectenv.shell.ProjectEnvShell</mainClass>
+                            <imageName>project-env-shell</imageName>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+
     <build>
         <plugins>
             <plugin>
@@ -102,51 +205,6 @@
                         </goals>
                     </execution>
                 </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>exec-maven-plugin</artifactId>
-                <version>${exec-maven-plugin.version}</version>
-                <executions>
-                    <execution>
-                        <id>execute-project-env-with-graalvm</id>
-                        <goals>
-                            <goal>exec</goal>
-                        </goals>
-                        <phase>prepare-package</phase>
-                        <configuration>
-                            <executable>java</executable>
-                            <arguments>
-                                <argument>-classpath</argument>
-                                <classpath/>
-                                <argument>-agentlib:native-image-agent=config-output-dir=${project.build.outputDirectory}/META-INF/native-image/project-env-shell-generated</argument>
-                                <argument>io.projectenv.shell.ProjectEnvShell</argument>
-                                <argument>--config-file=${project.basedir}/src/native-image/project-env.yml</argument>
-                                <argument>--output-template=zsh.peb</argument>
-                                <argument>--output-file=${project.build.directory}/.project-env</argument>
-                            </arguments>
-                            <workingDirectory>${project.build.directory}</workingDirectory>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.graalvm.nativeimage</groupId>
-                <artifactId>native-image-maven-plugin</artifactId>
-                <version>${graalvm.version}</version>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>native-image</goal>
-                        </goals>
-                        <phase>package</phase>
-                    </execution>
-                </executions>
-                <configuration>
-                    <buildArgs>--enable-url-protocols=https --no-fallback</buildArgs>
-                    <mainClass>io.projectenv.shell.ProjectEnvShell</mainClass>
-                    <imageName>project-env-shell</imageName>
-                </configuration>
             </plugin>
         </plugins>
         <pluginManagement>
