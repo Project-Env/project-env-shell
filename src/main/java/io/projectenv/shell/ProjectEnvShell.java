@@ -1,10 +1,10 @@
 package io.projectenv.shell;
 
 import io.projectenv.core.common.OperatingSystem;
-import io.projectenv.core.configuration.ProjectEnvConfiguration;
 import io.projectenv.core.configuration.ProjectEnvConfigurationFactory;
-import io.projectenv.core.installer.ToolInstallers;
-import io.projectenv.core.toolinfo.ToolInfo;
+import io.projectenv.core.configuration.ToolsConfiguration;
+import io.projectenv.core.tools.info.ToolInfo;
+import io.projectenv.core.tools.repository.ToolsRepositoryFactory;
 import io.projectenv.shell.template.TemplateProcessor;
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
@@ -42,9 +42,11 @@ public class ProjectEnvShell implements Callable<Integer> {
 
     @Override
     public Integer call() throws Exception {
-        ProjectEnvConfiguration projectEnvConfiguration = ProjectEnvConfigurationFactory.createFromFile(configFile);
+        ToolsConfiguration toolsConfiguration = ProjectEnvConfigurationFactory.createFromFile(configFile).getToolsConfiguration();
 
-        List<ToolInfo> toolInfos = ToolInstallers.installAllTools(projectEnvConfiguration, projectRoot);
+        File repositoryRoot = new File(projectRoot, toolsConfiguration.getToolsDirectory());
+        List<ToolInfo> toolInfos = ToolsRepositoryFactory.createToolRepository(repositoryRoot)
+                .requestTools(toolsConfiguration.getAllToolConfigurations(), projectRoot);
 
         writeOutput(toolInfos);
 
