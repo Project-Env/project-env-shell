@@ -8,8 +8,8 @@ import com.fasterxml.jackson.databind.ser.BeanSerializerModifier;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.fasterxml.jackson.databind.util.NameTransformer;
-import io.projectenv.core.toolinfo.MavenInfo;
-import io.projectenv.core.toolinfo.ToolInfo;
+import io.projectenv.core.tools.info.MavenInfo;
+import io.projectenv.core.tools.info.ToolInfo;
 
 import java.io.File;
 import java.io.IOException;

@@ -15,7 +15,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
-        <project-env-core.version>1.2.0</project-env-core.version>
+        <project-env-core.version>2.0.0</project-env-core.version>
         <picocli.version>4.6.1</picocli.version>
         <graalvm.version>21.0.0.2</graalvm.version>
         <junit-jupiter.version>5.7.1</junit-jupiter.version>

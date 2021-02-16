@@ -2,7 +2,7 @@ package io.projectenv.shell.template;
 
 import com.mitchellbosecke.pebble.PebbleEngine;
 import com.mitchellbosecke.pebble.template.PebbleTemplate;
-import io.projectenv.core.toolinfo.ToolInfo;
+import io.projectenv.core.tools.info.ToolInfo;
 import org.apache.commons.lang3.ClassPathUtils;
 
 import java.io.File;
