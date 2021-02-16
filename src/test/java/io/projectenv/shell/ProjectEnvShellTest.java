@@ -1,6 +1,7 @@
 package io.projectenv.shell;
 
 import io.projectenv.core.common.OperatingSystem;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -30,7 +31,9 @@ class ProjectEnvShellTest {
         });
 
         String expectedContent = readAndPrepareExpectedOutput(projectRoot);
-        assertThat(outputFile).hasContent(expectedContent);
+        String actualContent = readAndPrepareActualOutput(outputFile);
+
+        assertThat(actualContent).isEqualTo(expectedContent);
     }
 
     private File copyResourceToTarget(String resource, File target) throws Exception {
@@ -47,9 +50,13 @@ class ProjectEnvShellTest {
     private String readAndPrepareExpectedOutput(File projectRoot) throws Exception {
         return IOUtils.toString(getClass().getResourceAsStream("project-env-output.sh"), StandardCharsets.UTF_8)
                 .replace("BASE_PATH", projectRoot.getCanonicalPath())
-                .replace("OPERATING_SYSTEM", OperatingSystem.getCurrentOS().name().toLowerCase(Locale.ROOT))
                 .replace("NODE_PLATFORM", getNodePlatformName())
                 .replace("JDK_HOME", getJdkHome());
+    }
+
+    private String readAndPrepareActualOutput(File outputFile) throws Exception {
+        return FileUtils.readFileToString(outputFile, StandardCharsets.UTF_8)
+                .replaceAll(".{8}-.{4}-.{4}-.{4}-.{12}/", "");
     }
 
     private String getNodePlatformName() {
@@ -64,7 +71,7 @@ class ProjectEnvShellTest {
     }
 
     private String getJdkHome() {
-        if(OperatingSystem.getCurrentOS() == OperatingSystem.MACOS) {
+        if (OperatingSystem.getCurrentOS() == OperatingSystem.MACOS) {
             return "/Contents/Home";
         }
 
