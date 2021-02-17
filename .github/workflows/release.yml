@@ -8,8 +8,21 @@ on:
         required: true
 
 jobs:
+  create-release:
+    runs-on: ubuntu-latest
+    outputs:
+      upload_url: ${{ steps.release.outputs.upload_url }}
+    steps:
+    - id: release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: v${{ github.event.inputs.version }}
+        release_name: v${{ github.event.inputs.version }}
   build:
     runs-on: ${{ matrix.os }}
+    needs: create-release
     strategy:
       matrix:
         os: [macos-latest, windows-latest, ubuntu-latest]
@@ -39,18 +52,11 @@ jobs:
           ./project-env-cli --config-file=project-env.yml --output-template=github-actions.peb --output-file=github-actions-env.sh
           ./github-actions-env.sh
       - run: mvn -B package -Pnative-image -Drevision=${{ github.event.inputs.version }}
-      - id: release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: v${{ github.event.inputs.version }}
-          release_name: v${{ github.event.inputs.version }}
       - uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          upload_url: ${{ steps.release.outputs.upload_url }}
+          upload_url: ${{ needs.create-release.outputs.upload_url }}
           asset_path: target/${{ matrix.asset_file }}
           asset_name: ${{ matrix.asset_name }}
           asset_content_type: application/octet-stream
