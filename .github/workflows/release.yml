@@ -46,11 +46,13 @@ jobs:
           path: ~/.m2
           key: ${{ runner.os }}-m2-${{ hashFiles('pom.xml') }}
           restore-keys: ${{ runner.os }}-m2
-      - run: |
-          curl -L https://github.com/Project-Env/project-env-shell/releases/download/0.0.7/project-env-shell-linux-amd64 -o project-env-cli
-          chmod +x ./project-env-cli
-          ./project-env-cli --config-file=project-env.yml --output-template=github-actions.peb --output-file=github-actions-env.sh
-          ./github-actions-env.sh
+      - uses: DeLaGuardo/setup-graalvm@3.1
+        with:
+          graalvm-version: '20.3.0.java11'
+      - run: gu${{ matrix.gu_executable_ext }} install native-image
+      - uses: stCarolas/setup-maven@v4
+        with:
+          maven-version: 3.6.3
       - run: mvn -B package -Pnative-image -Drevision=${{ github.event.inputs.version }}
       - uses: actions/upload-release-asset@v1
         env:
