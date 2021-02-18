@@ -20,6 +20,7 @@ jobs:
       with:
         tag_name: v${{ github.event.inputs.version }}
         release_name: v${{ github.event.inputs.version }}
+        draft: true
   build:
     runs-on: ${{ matrix.os }}
     needs: create-release
@@ -53,7 +54,7 @@ jobs:
       - uses: stCarolas/setup-maven@v4
         with:
           maven-version: 3.6.3
-      - run: mvn -B package -Pnative-image -Drevision=${{ github.event.inputs.version }}
+      - run: mvn -B package -Pnative-image -Drevision="${{ github.event.inputs.version }}"
       - uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
