@@ -10,6 +10,7 @@ import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.fasterxml.jackson.databind.util.NameTransformer;
 import io.projectenv.core.tools.info.MavenInfo;
 import io.projectenv.core.tools.info.ToolInfo;
+import org.apache.commons.lang3.RegExUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -17,6 +18,7 @@ import java.lang.reflect.WildcardType;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.regex.Pattern;
 
 public final class TemplateContextFactory {
 
@@ -92,7 +94,12 @@ public final class TemplateContextFactory {
 
         @Override
         public void serialize(File value, JsonGenerator jsonGenerator, SerializerProvider provider) throws IOException {
-            jsonGenerator.writeString(value.getCanonicalPath());
+            String canonicalPath = value.getCanonicalPath();
+
+            // removes a trailing path separator if existing
+            canonicalPath = canonicalPath.replaceAll(Pattern.quote(File.separator) + "$", "");
+
+            jsonGenerator.writeString(canonicalPath);
         }
 
     }

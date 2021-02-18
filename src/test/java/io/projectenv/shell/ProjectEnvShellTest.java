@@ -11,7 +11,6 @@ import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
-import java.util.Locale;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -51,15 +50,15 @@ class ProjectEnvShellTest {
         return IOUtils.toString(getClass().getResourceAsStream("project-env-output.sh"), StandardCharsets.UTF_8)
                 .replace("BASE_PATH", projectRoot.getCanonicalPath())
                 .replace("NODE_PLATFORM", getNodePlatformName())
+                .replace("NODE_BIN_PATH", getNodeBinPath())
                 .replace("JDK_HOME", getJdkHome())
-                .replaceAll(".{8}-.{4}-.{4}-.{4}-.{12}/", "")
                 .replace("/", File.separator);
-
     }
 
     private String readAndPrepareActualOutput(File outputFile) throws Exception {
         return FileUtils.readFileToString(outputFile, StandardCharsets.UTF_8)
-                .replaceAll(".{8}-.{4}-.{4}-.{4}-.{12}/", "");
+                .replaceAll(".{8}-.{4}-.{4}-.{4}-.{13}", "")
+                .replace("/", File.separator);
     }
 
     private String getNodePlatformName() {
@@ -69,7 +68,19 @@ class ProjectEnvShellTest {
             case LINUX:
                 return "linux";
             case WINDOWS:
-                return "windows";
+                return "win";
+            default:
+                throw new IllegalStateException("unsupported os " + OperatingSystem.getCurrentOS());
+        }
+    }
+
+    private String getNodeBinPath() {
+        switch (OperatingSystem.getCurrentOS()) {
+            case MACOS:
+            case LINUX:
+                return "/bin";
+            case WINDOWS:
+                return "";
             default:
                 throw new IllegalStateException("unsupported os " + OperatingSystem.getCurrentOS());
         }

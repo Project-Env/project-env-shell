@@ -12,7 +12,7 @@ alias mvn="mvn -gs BASE_PATH/settings.xml -s BASE_PATH/settings-user.xml"
 export PATH="BASE_PATH/.tools/gradle-6.7.1/bin:$PATH"
 
 # node
-export PATH="BASE_PATH/.tools/node-v14.15.3-NODE_PLATFORM-x64/bin:$PATH"
+export PATH="BASE_PATH/.tools/node-v14.15.3-NODE_PLATFORM-x64NODE_BIN_PATH:$PATH"
 
 # jaxb-ri
 export JAXB_HOME="BASE_PATH/.tools/jaxb-ri"
