@@ -51,7 +51,10 @@ class ProjectEnvShellTest {
         return IOUtils.toString(getClass().getResourceAsStream("project-env-output.sh"), StandardCharsets.UTF_8)
                 .replace("BASE_PATH", projectRoot.getCanonicalPath())
                 .replace("NODE_PLATFORM", getNodePlatformName())
-                .replace("JDK_HOME", getJdkHome());
+                .replace("JDK_HOME", getJdkHome())
+                .replaceAll(".{8}-.{4}-.{4}-.{4}-.{12}/", "")
+                .replace("/", File.separator);
+
     }
 
     private String readAndPrepareActualOutput(File outputFile) throws Exception {
@@ -65,6 +68,8 @@ class ProjectEnvShellTest {
                 return "darwin";
             case LINUX:
                 return "linux";
+            case WINDOWS:
+                return "windows";
             default:
                 throw new IllegalStateException("unsupported os " + OperatingSystem.getCurrentOS());
         }
