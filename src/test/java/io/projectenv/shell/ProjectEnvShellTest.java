@@ -23,6 +23,7 @@ class ProjectEnvShellTest {
         File outputFile = new File(projectRoot, "project-env-output.sh");
 
         ProjectEnvShell.main(new String[]{
+                "refresh",
                 "--config-file=" + configFile.getAbsolutePath(),
                 "--output-template=" + outputTemplate,
                 "--output-file=" + outputFile.getAbsolutePath(),

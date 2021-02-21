@@ -10,7 +10,6 @@ import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.fasterxml.jackson.databind.util.NameTransformer;
 import io.projectenv.core.tools.info.MavenInfo;
 import io.projectenv.core.tools.info.ToolInfo;
-import org.apache.commons.lang3.RegExUtils;
 
 import java.io.File;
 import java.io.IOException;
