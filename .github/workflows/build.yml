@@ -25,7 +25,8 @@ jobs:
         chmod +x ./project-env-cli
         ./project-env-cli --config-file=project-env.yml --output-template=github-actions.peb --output-file=github-actions-env.sh
         ./github-actions-env.sh
-    - run: mvn -B -Psonar verify
+    - run: mvn -B -s etc/m2/settings-ci.xml -Psonar verify
       env:
+        GITHUB_USER: ${{ github.actor }}
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}

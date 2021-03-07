@@ -1,8 +1,7 @@
 #!/bin/zsh
 {% for tool in tools %}
 
-# {{ tool.toolName }}
-
+{% if tool.isSimpleTool %}
 {% for environmentVariable in tool.environmentVariables %}
 export {{ environmentVariable.key }}="{{ environmentVariable.value }}"
 {% endfor %}
@@ -18,5 +17,6 @@ export PATH="{{ pathElement }}:$PATH"
 {% set mavenAlias = mavenAlias + " -s " + tool.userSettingsFile %}
 {% endif %}
 alias mvn="{{ mavenAlias }}"
+{% endif %}
 {% endif %}
 {% endfor %}

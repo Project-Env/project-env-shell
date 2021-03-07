@@ -1,12 +1,12 @@
 #!/bin/bash
 {% for tool in tools %}
 
-# {{ tool.toolName }}
-
+{% if tool.isSimpleTool %}
 {% for environmentVariable in tool.environmentVariables %}
 echo "{{ environmentVariable.key }}={{ environmentVariable.value }}" >> $GITHUB_ENV
 {% endfor %}
 {% for pathElement in tool.pathElements %}
 echo "{{ pathElement }}" >> $GITHUB_PATH
 {% endfor %}
+{% endif %}
 {% endfor %}

@@ -21,3 +21,4 @@ tools:
     toolName: "maven"
     downloadUris:
       - downloadUri: "https://downloads.apache.org/maven/maven-3/3.6.3/binaries/apache-maven-3.6.3-bin.tar.gz"
+    userSettingsFile: "etc/m2/settings-${USER}.xml"

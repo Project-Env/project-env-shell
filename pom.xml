@@ -15,7 +15,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
-        <project-env-core.version>2.0.0</project-env-core.version>
+        <project-env-core.version>2.1.0</project-env-core.version>
         <picocli.version>4.6.1</picocli.version>
         <graalvm.version>21.0.0.2</graalvm.version>
         <junit-jupiter.version>5.7.1</junit-jupiter.version>
@@ -276,8 +276,8 @@
 
     <repositories>
         <repository>
-            <id>bintray-project-env-release</id>
-            <url>https://dl.bintray.com/project-env/maven-repo</url>
+            <id>github</id>
+            <url>https://maven.pkg.github.com/Project-Env/project-env-core</url>
         </repository>
     </repositories>
 

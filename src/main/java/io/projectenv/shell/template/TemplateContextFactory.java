@@ -9,6 +9,7 @@ import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.fasterxml.jackson.databind.util.NameTransformer;
 import io.projectenv.core.tools.info.MavenInfo;
+import io.projectenv.core.tools.info.SimpleToolInfo;
 import io.projectenv.core.tools.info.ToolInfo;
 
 import java.io.File;
@@ -37,7 +38,6 @@ public final class TemplateContextFactory {
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.registerModule(module);
 
-
         return Map.of("tools", objectMapper.convertValue(toolInfo, TOOLS_CONTEXT_TYPE));
     }
 
@@ -57,7 +57,7 @@ public final class TemplateContextFactory {
 
     private static class ToolInfoSerializer extends JsonSerializer<ToolInfo> {
 
-        private static final List<Class<? extends ToolInfo>> RELEVANT_IS_TOOL_PROPERTY_CLASSES = List.of(MavenInfo.class);
+        private static final List<Class<? extends ToolInfo>> RELEVANT_IS_TOOL_PROPERTY_CLASSES = List.of(SimpleToolInfo.class, MavenInfo.class);
 
         private final JsonSerializer<ToolInfo> serializer;
 

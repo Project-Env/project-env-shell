@@ -18,6 +18,7 @@ class ProjectEnvShellTest {
 
     @Test
     void executeWithZshTemplate(@TempDir File projectRoot) throws Exception {
+        copyResourceToTarget("git-hook", new File(projectRoot, "hooks"));
         File configFile = copyResourceToTarget("project-env.yml", projectRoot);
         String outputTemplate = "zsh.peb";
         File outputFile = new File(projectRoot, "project-env-output.sh");
@@ -38,6 +39,7 @@ class ProjectEnvShellTest {
 
     private File copyResourceToTarget(String resource, File target) throws Exception {
         File resultingFile = new File(target, resource);
+        FileUtils.forceMkdirParent(resultingFile);
 
         try (InputStream inputStream = getClass().getResourceAsStream(resource);
              OutputStream outputStream = new FileOutputStream(resultingFile)) {
