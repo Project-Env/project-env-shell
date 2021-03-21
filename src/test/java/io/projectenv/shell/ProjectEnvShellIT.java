@@ -11,30 +11,60 @@ import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
+import java.util.concurrent.TimeUnit;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class ProjectEnvShellTest {
+class ProjectEnvShellIT {
 
     @Test
     void executeWithZshTemplate(@TempDir File projectRoot) throws Exception {
         copyResourceToTarget("git-hook", new File(projectRoot, "hooks"));
         File configFile = copyResourceToTarget("project-env.yml", projectRoot);
+
+        executeAndAssertRefresh(projectRoot, configFile);
+        executeAndAssertClean(projectRoot, configFile);
+    }
+
+    private void executeAndAssertRefresh(File projectRoot, File configFile) throws Exception {
         String outputTemplate = "zsh.peb";
         File outputFile = new File(projectRoot, "project-env-output.sh");
 
-        ProjectEnvShell.main(new String[]{
+        Process process = new ProcessBuilder(
+                "./target/project-env-shell",
                 "refresh",
                 "--config-file=" + configFile.getAbsolutePath(),
                 "--output-template=" + outputTemplate,
                 "--output-file=" + outputFile.getAbsolutePath(),
                 "--project-root=" + projectRoot.getAbsolutePath()
-        });
+        )
+                .inheritIO()
+                .start();
+
+        boolean terminated = process.waitFor(5, TimeUnit.MINUTES);
+        if (!terminated) {
+            process.destroy();
+        }
+        assertThat(process.exitValue()).describedAs("process exit code").isZero();
 
         String expectedContent = readAndPrepareExpectedOutput(projectRoot);
         String actualContent = readAndPrepareActualOutput(outputFile);
-
         assertThat(actualContent).isEqualTo(expectedContent);
+    }
+
+    private void executeAndAssertClean(File projectRoot, File configFile) throws Exception {
+        Process process = new ProcessBuilder(
+                "./target/project-env-shell",
+                "clean",
+                "--config-file=" + configFile.getAbsolutePath(),
+                "--project-root=" + projectRoot.getAbsolutePath()
+        ).inheritIO().start();
+
+        boolean terminated = process.waitFor(5, TimeUnit.MINUTES);
+        if (!terminated) {
+            process.destroy();
+        }
+        assertThat(process.exitValue()).describedAs("process exit code").isZero();
     }
 
     private File copyResourceToTarget(String resource, File target) throws Exception {
