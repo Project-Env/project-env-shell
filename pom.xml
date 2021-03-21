@@ -22,10 +22,12 @@
         <assertj-core.version>3.19.0</assertj-core.version>
         <pebble.version>3.1.5</pebble.version>
         <slf4j.version>1.7.30</slf4j.version>
+        <reflections.version>0.9.11</reflections.version>
 
         <flatten-maven-plugin.version>1.2.7</flatten-maven-plugin.version>
         <maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>
         <maven-surefire-plugin.version>3.0.0-M5</maven-surefire-plugin.version>
+        <maven-failsafe-plugin.version>3.0.0-M5</maven-failsafe-plugin.version>
         <maven-resources-plugin.version>3.2.0</maven-resources-plugin.version>
         <exec-maven-plugin.version>3.0.0</exec-maven-plugin.version>
         <maven-deploy-plugin.version>3.0.0-M1</maven-deploy-plugin.version>
@@ -64,6 +66,18 @@
         </dependency>
 
         <dependency>
+            <groupId>org.reflections</groupId>
+            <artifactId>reflections</artifactId>
+            <version>${reflections.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.graalvm.nativeimage</groupId>
+            <artifactId>svm</artifactId>
+            <version>${graalvm.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
             <groupId>org.graalvm.sdk</groupId>
             <artifactId>graal-sdk</artifactId>
             <version>${graalvm.version}</version>
@@ -97,6 +111,7 @@
                 <sonar.projectKey>Project-Env_project-env-shell</sonar.projectKey>
                 <sonar.organization>project-env</sonar.organization>
                 <sonar.host.url>https://sonarcloud.io</sonar.host.url>
+                <sonar.coverage.exclusions>**/nativeimage/**/*</sonar.coverage.exclusions>
             </properties>
             <build>
                 <plugins>
@@ -112,11 +127,22 @@
                                 </goals>
                             </execution>
                             <execution>
+                                <id>prepare-agent-integration</id>
+                                <goals>
+                                    <goal>prepare-agent-integration</goal>
+                                </goals>
+                            </execution>
+                            <execution>
                                 <id>create-report</id>
                                 <goals>
                                     <goal>report</goal>
                                 </goals>
-                                <phase>prepare-package</phase>
+                            </execution>
+                            <execution>
+                                <id>create-report-integration</id>
+                                <goals>
+                                    <goal>report-integration</goal>
+                                </goals>
                             </execution>
                         </executions>
                     </plugin>
@@ -140,53 +166,6 @@
             <id>native-image</id>
             <build>
                 <plugins>
-                    <plugin>
-                        <groupId>org.codehaus.mojo</groupId>
-                        <artifactId>exec-maven-plugin</artifactId>
-                        <version>${exec-maven-plugin.version}</version>
-                        <executions>
-                            <execution>
-                                <id>execute-project-env-refresh</id>
-                                <goals>
-                                    <goal>exec</goal>
-                                </goals>
-                                <phase>prepare-package</phase>
-                                <configuration>
-                                    <executable>java</executable>
-                                    <arguments>
-                                        <argument>-classpath</argument>
-                                        <classpath/>
-                                        <argument>-agentlib:native-image-agent=config-output-dir=${project.build.outputDirectory}/META-INF/native-image/project-env-refresh</argument>
-                                        <argument>io.projectenv.shell.ProjectEnvShell</argument>
-                                        <argument>refresh</argument>
-                                        <argument>--config-file=${project.basedir}/src/native-image/project-env.yml</argument>
-                                        <argument>--output-template=zsh.peb</argument>
-                                        <argument>--output-file=${project.build.directory}/.project-env</argument>
-                                    </arguments>
-                                    <workingDirectory>${project.build.directory}</workingDirectory>
-                                </configuration>
-                            </execution>
-                            <execution>
-                                <id>execute-project-env-clean</id>
-                                <goals>
-                                    <goal>exec</goal>
-                                </goals>
-                                <phase>prepare-package</phase>
-                                <configuration>
-                                    <executable>java</executable>
-                                    <arguments>
-                                        <argument>-classpath</argument>
-                                        <classpath/>
-                                        <argument>-agentlib:native-image-agent=config-output-dir=${project.build.outputDirectory}/META-INF/native-image/project-env-clean</argument>
-                                        <argument>io.projectenv.shell.ProjectEnvShell</argument>
-                                        <argument>clean</argument>
-                                        <argument>--config-file=${project.basedir}/src/native-image/project-env.yml</argument>
-                                    </arguments>
-                                    <workingDirectory>${project.build.directory}</workingDirectory>
-                                </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
                     <plugin>
                         <groupId>org.graalvm.nativeimage</groupId>
                         <artifactId>native-image-maven-plugin</artifactId>
@@ -232,6 +211,18 @@
                     </execution>
                 </executions>
             </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-failsafe-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>integration-test</goal>
+                            <goal>verify</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
         <pluginManagement>
             <plugins>
@@ -249,6 +240,11 @@
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-surefire-plugin</artifactId>
                     <version>${maven-surefire-plugin.version}</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-failsafe-plugin</artifactId>
+                    <version>${maven-failsafe-plugin.version}</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>

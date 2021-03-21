@@ -12,7 +12,11 @@ import picocli.CommandLine.Command;
 public final class ProjectEnvShell {
 
     public static void main(String[] args) {
-        new CommandLine(new ProjectEnvShell()).execute(args);
+        System.exit(executeProjectEnvShell(args));
+    }
+
+    protected static int executeProjectEnvShell(String[] args) {
+        return new CommandLine(new ProjectEnvShell()).execute(args);
     }
 
 }
