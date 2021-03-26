@@ -21,7 +21,7 @@ jobs:
         key: ${{ runner.os }}-m2-${{ hashFiles('pom.xml') }}
         restore-keys: ${{ runner.os }}-m2
     - run: |
-        curl -L https://github.com/Project-Env/project-env-shell/releases/download/1.1.1/project-env-shell-linux-amd64 -o project-env-cli
+        curl -L https://github.com/Project-Env/project-env-shell/releases/download/v2.1.0/project-env-shell-linux-amd64 -o project-env-cli
         chmod +x ./project-env-cli
         ./project-env-cli --config-file=project-env.yml --output-template=github-actions.peb --output-file=github-actions-env.sh
         ./github-actions-env.sh

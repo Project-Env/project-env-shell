@@ -13,6 +13,12 @@ jobs:
     outputs:
       upload_url: ${{ steps.release.outputs.upload_url }}
     steps:
+    - run: |
+        curl -L https://github.com/Project-Env/project-env-shell/releases/download/v2.1.0/project-env-shell-linux-amd64 -o project-env-cli
+        chmod +x ./project-env-cli
+        ./project-env-cli --config-file=project-env.yml --output-template=github-actions.peb --output-file=github-actions-env.sh
+        ./github-actions-env.sh
+    - run: mvn -B -s etc/m2/settings-ci.xml verify -Drevision="${{ github.event.inputs.version }}"
     - id: release
       uses: actions/create-release@v1
       env:
@@ -21,6 +27,22 @@ jobs:
         tag_name: v${{ github.event.inputs.version }}
         release_name: v${{ github.event.inputs.version }}
         draft: true
+    - uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.release.outputs.upload_url }}
+        asset_path: target/shell/project-env-cygwin-shell.bat
+        asset_name: project-env-cygwin-shell.bat
+        asset_content_type: application/octet-stream
+    - uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.release.outputs.upload_url }}
+        asset_path: target/shell/project-env-zsh-shell.sh
+        asset_name: project-env-zsh-shell.sh
+        asset_content_type: application/octet-stream
   build:
     runs-on: ${{ matrix.os }}
     needs: create-release
