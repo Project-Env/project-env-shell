@@ -13,12 +13,16 @@ jobs:
     outputs:
       upload_url: ${{ steps.release.outputs.upload_url }}
     steps:
+    - uses: actions/checkout@v2
     - run: |
         curl -L https://github.com/Project-Env/project-env-shell/releases/download/v2.1.0/project-env-shell-linux-amd64 -o project-env-cli
         chmod +x ./project-env-cli
         ./project-env-cli refresh --config-file=project-env.yml --output-template=github-actions.peb --output-file=github-actions-env.sh
         ./github-actions-env.sh
-    - run: mvn -B -s etc/m2/settings-ci.xml verify -Drevision="${{ github.event.inputs.version }}"
+    - run: mvn -B -s etc/m2/settings-ci.xml package -Drevision="${{ github.event.inputs.version }}"
+      env:
+        GITHUB_USER: ${{ github.actor }}
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     - id: release
       uses: actions/create-release@v1
       env:
