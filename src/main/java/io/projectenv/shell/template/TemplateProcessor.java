@@ -4,6 +4,7 @@ import com.mitchellbosecke.pebble.PebbleEngine;
 import com.mitchellbosecke.pebble.template.PebbleTemplate;
 import io.projectenv.core.tools.info.ToolInfo;
 import org.apache.commons.lang3.ClassPathUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -12,6 +13,8 @@ import java.io.Writer;
 import java.util.List;
 
 public final class TemplateProcessor {
+
+    private static final String PEBBLE_TEMPLATE_EXT = ".peb";
 
     private static final PebbleEngine PEBBLE_ENGINE = new PebbleEngine
             .Builder()
@@ -37,7 +40,11 @@ public final class TemplateProcessor {
             return template;
         }
 
-        return ClassPathUtils.toFullyQualifiedPath(TemplateProcessor.class, template);
+        if (StringUtils.endsWith(template, PEBBLE_TEMPLATE_EXT)) {
+            return ClassPathUtils.toFullyQualifiedPath(TemplateProcessor.class, template);
+        }
+
+        return ClassPathUtils.toFullyQualifiedPath(TemplateProcessor.class, template + PEBBLE_TEMPLATE_EXT);
     }
 
 }

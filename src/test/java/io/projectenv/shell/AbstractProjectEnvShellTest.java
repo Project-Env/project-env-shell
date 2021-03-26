@@ -26,7 +26,7 @@ abstract class AbstractProjectEnvShellTest {
     }
 
     private void executeAndAssertRefresh(File projectRoot, File configFile) throws Exception {
-        String outputTemplate = "zsh.peb";
+        String outputTemplate = "zsh";
         File outputFile = new File(projectRoot, "project-env-output.sh");
 
         executeProjectEnvShell(
