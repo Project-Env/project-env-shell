@@ -1,12 +1,12 @@
-#!/bin/zsh
+#!/bin/bash
 {% for tool in tools %}
 
 {% if tool.isSimpleTool %}
 {% for environmentVariable in tool.environmentVariables %}
-export {{ environmentVariable.key }}="{{ environmentVariable.value }}"
+export {{ environmentVariable.key }}="$(cygpath '{{ environmentVariable.value }}')"
 {% endfor %}
 {% for pathElement in tool.pathElements %}
-export PATH="{{ pathElement }}:$PATH"
+export PATH="$(cygpath '{{ pathElement }}'):$PATH"
 {% endfor %}
 {% if tool.isMaven and (tool.globalSettingsFile != null or tool.userSettingsFile != null) %}
 {% if tool.globalSettingsFile != null %}
