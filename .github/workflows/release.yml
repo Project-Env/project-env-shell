@@ -16,7 +16,7 @@ jobs:
     - run: |
         curl -L https://github.com/Project-Env/project-env-shell/releases/download/v2.1.0/project-env-shell-linux-amd64 -o project-env-cli
         chmod +x ./project-env-cli
-        ./project-env-cli --config-file=project-env.yml --output-template=github-actions.peb --output-file=github-actions-env.sh
+        ./project-env-cli refresh --config-file=project-env.yml --output-template=github-actions.peb --output-file=github-actions-env.sh
         ./github-actions-env.sh
     - run: mvn -B -s etc/m2/settings-ci.xml verify -Drevision="${{ github.event.inputs.version }}"
     - id: release
