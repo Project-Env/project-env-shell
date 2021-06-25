@@ -1,21 +1,20 @@
 #!/bin/bash
-{% for tool in tools %}
+{% for entry in toolInfos.entrySet() %}
+{% for toolInfo in entry.value %}
 
-{% if tool.isSimpleTool %}
-{% for environmentVariable in tool.environmentVariables %}
-export {{ environmentVariable.key }}="$(cygpath '{{ environmentVariable.value }}')"
+{% for environmentVariable in toolInfo.environmentVariables %}
+export {{ environmentVariable.key }}="$(cygpath '{{ environmentVariable.value | path }}')"
 {% endfor %}
-{% for pathElement in tool.pathElements %}
-export PATH="$(cygpath '{{ pathElement }}'):$PATH"
+
+{% for pathElement in toolInfo.pathElements %}
+export PATH="$(cygpath '{{ pathElement | path }}'):$PATH"
 {% endfor %}
-{% if tool.isMaven and (tool.globalSettingsFile != null or tool.userSettingsFile != null) %}
-{% if tool.globalSettingsFile != null %}
-export MVN_GS_PARAM="{{ tool.globalSettingsFile }}"
-{% endif %}
-{% if tool.userSettingsFile != null %}
-export MVN_S_PARAM="{{ tool.userSettingsFile }}"
-{% endif %}
-alias mvn="mvn $MVN_GS_PARAM $MVN_S_PARAM"
+
+{% if entry.key == "maven" %}
+{% if toolInfo.unhandledProjectResources.userSettingsFile != null %}
+alias mvn="mvn -s {{ toolInfo.unhandledProjectResources.userSettingsFile | path }}"
 {% endif %}
 {% endif %}
+
+{% endfor %}
 {% endfor %}

@@ -1,35 +1,33 @@
 package io.projectenv.shell.nativeimage;
 
-import com.fasterxml.jackson.databind.ser.std.StdSerializer;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.annotations.SerializedName;
 import com.oracle.svm.core.annotate.AutomaticFeature;
-import io.projectenv.core.configuration.*;
-import io.projectenv.core.tools.info.ToolInfo;
-import io.projectenv.core.tools.repository.impl.catalogue.ToolCatalogue;
-import io.projectenv.core.tools.repository.impl.catalogue.ToolEntry;
-import io.projectenv.core.tools.service.collector.ToolInfoCollector;
-import io.projectenv.core.tools.service.installer.ToolInstaller;
-import io.projectenv.core.tools.service.resources.LocalToolResourcesProcessor;
+import io.projectenv.core.cli.api.ToolInfo;
+import io.projectenv.core.commons.nativeimage.NativeImageHelper;
+import io.projectenv.core.commons.process.ProcessOutputWriterAccessor;
 import io.projectenv.shell.template.TemplateProcessor;
-import org.apache.commons.compress.archivers.zip.ZipExtraField;
 import org.graalvm.nativeimage.hosted.Feature;
 import org.graalvm.nativeimage.hosted.RuntimeClassInitialization;
 
 import java.io.IOException;
 import java.util.Map;
 
-import static io.projectenv.shell.nativeimage.NativeImageHelper.*;
+import static io.projectenv.core.commons.nativeimage.NativeImageHelper.registerClassForReflection;
+import static io.projectenv.core.commons.nativeimage.NativeImageHelper.registerResource;
+
 
 @AutomaticFeature
 public class ProjectEnvFeature implements Feature {
 
+    private static final String BASE_PACKAGE = "io.projectenv";
+
     @Override
     public void beforeAnalysis(BeforeAnalysisAccess access) {
         configureSlf4j();
-        registerZipExtraFieldClasses();
-        registerConfigurationClasses();
-        registerInfoClasses();
-        registerCatalogueClasses();
-        registerServices();
+        configureProcessOutputWriter();
+        registerToolInfo();
+        registerGsonSupport();
         registerTemplates();
     }
 
@@ -37,35 +35,18 @@ public class ProjectEnvFeature implements Feature {
         RuntimeClassInitialization.initializeAtBuildTime("org.slf4j");
     }
 
-    private void registerZipExtraFieldClasses() {
-        // Since Apache Commons Compress uses reflection to register the ZipExtraField
-        // implementations, we have to register them for Reflection support.
-        NativeImageHelper.registerClassAndSubclassesForReflection(ZipExtraField.class);
+    private void configureProcessOutputWriter() {
+        RuntimeClassInitialization.initializeAtBuildTime(ProcessOutputWriterAccessor.class);
     }
 
-    private void registerConfigurationClasses() {
-        registerClassAndSubclassesForReflection(DownloadUri.class);
-        registerClassAndSubclassesForReflection(PostExtractionCommand.class);
-        registerClassAndSubclassesForReflection(ProjectEnvConfiguration.class);
-        registerClassAndSubclassesForReflection(ToolConfiguration.class);
-        registerClassAndSubclassesForReflection(ToolsConfiguration.class);
+    private void registerToolInfo() {
+        NativeImageHelper.registerClassAndSubclassesForReflection(ToolInfo.class);
     }
 
-    private void registerInfoClasses() {
-        registerClassAndSubclassesForReflection(ToolInfo.class);
-    }
-
-    private void registerCatalogueClasses() {
-        registerClassAndSubclassesForReflection(ToolCatalogue.class);
-        registerClassAndSubclassesForReflection(ToolEntry.class);
-        registerClassAndSubclassesForReflection(StdSerializer.class);
-    }
-
-    private void registerServices() {
+    private void registerGsonSupport() {
         try {
-            registerService(ToolInfoCollector.class);
-            registerService(ToolInstaller.class);
-            registerService(LocalToolResourcesProcessor.class);
+            NativeImageHelper.registerService(TypeAdapterFactory.class);
+            NativeImageHelper.registerFieldsWithAnnotationForReflection(BASE_PACKAGE, SerializedName.class);
         } catch (IOException e) {
             throw new IllegalStateException("failed to register services for usage in native-image");
         }

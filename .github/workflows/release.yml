@@ -13,57 +13,31 @@ jobs:
     outputs:
       upload_url: ${{ steps.release.outputs.upload_url }}
     steps:
-    - uses: actions/checkout@v2
-    - run: |
-        curl -L https://github.com/Project-Env/project-env-shell/releases/download/v2.1.0/project-env-shell-linux-amd64 -o project-env-cli
-        chmod +x ./project-env-cli
-        ./project-env-cli refresh --config-file=project-env.yml --output-template=github-actions.peb --output-file=github-actions-env.sh
-        ./github-actions-env.sh
-    - run: mvn -B -s etc/m2/settings-ci.xml package -Drevision="${{ github.event.inputs.version }}"
-      env:
-        GITHUB_USER: ${{ github.actor }}
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-    - id: release
-      uses: actions/create-release@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        tag_name: v${{ github.event.inputs.version }}
-        release_name: v${{ github.event.inputs.version }}
-        draft: true
-    - uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ steps.release.outputs.upload_url }}
-        asset_path: target/shell/project-env-cygwin-shell.bat
-        asset_name: project-env-cygwin-shell.bat
-        asset_content_type: application/octet-stream
-    - uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ steps.release.outputs.upload_url }}
-        asset_path: target/shell/project-env-zsh-shell.sh
-        asset_name: project-env-zsh-shell.sh
-        asset_content_type: application/octet-stream
+      - id: release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: v${{ github.event.inputs.version }}
+          release_name: v${{ github.event.inputs.version }}
+          draft: true
   build:
     runs-on: ${{ matrix.os }}
     needs: create-release
     strategy:
       matrix:
-        os: [macos-latest, windows-latest, ubuntu-latest]
+        os: [ macos-latest, windows-latest, ubuntu-latest ]
         include:
           - os: ubuntu-latest
-            asset_file: project-env-shell
-            asset_name: project-env-shell-linux-amd64
+            shell_assembly_id: linux-amd64
+            shell_assembly_format: tar.gz
           - os: windows-latest
-            asset_file: project-env-shell.exe
-            asset_name: project-env-shell-windows-amd64.exe
+            shell_assembly_id: windows-amd64
+            shell_assembly_format: zip
             gu_executable_ext: .cmd
           - os: macos-latest
-            asset_file: project-env-shell
-            asset_name: project-env-shell-macos-amd64
+            shell_assembly_id: macos-amd64
+            shell_assembly_format: tar.gz
     steps:
       - uses: ilammy/msvc-dev-cmd@v1
         if: ${{ matrix.os == 'windows-latest'}}
@@ -75,12 +49,13 @@ jobs:
           restore-keys: ${{ runner.os }}-m2
       - uses: DeLaGuardo/setup-graalvm@3.1
         with:
-          graalvm-version: '21.0.0.2.java11'
+          graalvm-version: '21.1.0.java11'
       - run: gu${{ matrix.gu_executable_ext }} install native-image
       - uses: stCarolas/setup-maven@v4
         with:
           maven-version: 3.6.3
-      - run: mvn -B -s etc/m2/settings-ci.xml package -Pnative-image -Drevision="${{ github.event.inputs.version }}"
+      - run: |
+          mvn -B -s etc/m2/settings-ci.xml package -Pnative-image "-Drevision=${{ github.event.inputs.version }}" "-Dshell.assembly.id=${{ matrix.shell_assembly_id }}" "-Dshell.assembly.format=${{ matrix.shell_assembly_format }}"
         env:
           GITHUB_USER: ${{ github.actor }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -89,7 +64,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ needs.create-release.outputs.upload_url }}
-          asset_path: target/${{ matrix.asset_file }}
-          asset_name: ${{ matrix.asset_name }}
+          asset_path: target/shell-${{ github.event.inputs.version }}-${{ matrix.shell_assembly_id }}.${{ matrix.shell_assembly_format }}
+          asset_name: shell-${{ github.event.inputs.version }}-${{ matrix.shell_assembly_id }}.${{ matrix.shell_assembly_format }}
           asset_content_type: application/octet-stream
 

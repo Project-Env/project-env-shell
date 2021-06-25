@@ -15,7 +15,11 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
-        <project-env-core.version>2.1.0</project-env-core.version>
+        <shell.binary>project-env-shell</shell.binary>
+        <shell.assembly.id>binary</shell.assembly.id>
+        <shell.assembly.format>tar.gz</shell.assembly.format>
+
+        <project-env-core.version>3.0.1</project-env-core.version>
         <picocli.version>4.6.1</picocli.version>
         <graalvm.version>21.1.0</graalvm.version>
         <junit-jupiter.version>5.7.2</junit-jupiter.version>
@@ -23,6 +27,9 @@
         <pebble.version>3.1.5</pebble.version>
         <slf4j.version>1.7.30</slf4j.version>
         <reflections.version>0.9.11</reflections.version>
+        <commons-lang3.version>3.12.0</commons-lang3.version>
+        <commons-io.version>2.10.0</commons-io.version>
+        <system-lambda.version>1.2.0</system-lambda.version>
 
         <flatten-maven-plugin.version>1.2.7</flatten-maven-plugin.version>
         <maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>
@@ -33,13 +40,35 @@
         <maven-deploy-plugin.version>3.0.0-M1</maven-deploy-plugin.version>
         <sonar-maven-plugin.version>3.9.0.2155</sonar-maven-plugin.version>
         <jacoco-maven-plugin.version>0.8.6</jacoco-maven-plugin.version>
+        <maven-assembly-plugin.version>3.3.0</maven-assembly-plugin.version>
     </properties>
 
     <dependencies>
         <dependency>
-            <groupId>io.projectenv</groupId>
-            <artifactId>core</artifactId>
+            <groupId>io.projectenv.core</groupId>
+            <artifactId>cli-api</artifactId>
             <version>${project-env-core.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.projectenv.core.commons</groupId>
+            <artifactId>process</artifactId>
+            <version>${project-env-core.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.projectenv.core.commons</groupId>
+            <artifactId>native-image</artifactId>
+            <version>${project-env-core.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+            <version>${commons-lang3.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+            <version>${commons-io.version}</version>
         </dependency>
 
         <dependency>
@@ -47,9 +76,10 @@
             <artifactId>pebble</artifactId>
             <version>${pebble.version}</version>
         </dependency>
+
         <dependency>
             <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-simple</artifactId>
+            <artifactId>slf4j-nop</artifactId>
             <version>${slf4j.version}</version>
         </dependency>
 
@@ -66,24 +96,17 @@
         </dependency>
 
         <dependency>
-            <groupId>org.reflections</groupId>
-            <artifactId>reflections</artifactId>
-            <version>${reflections.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.graalvm.nativeimage</groupId>
-            <artifactId>svm</artifactId>
-            <version>${graalvm.version}</version>
-            <scope>provided</scope>
+            <groupId>io.projectenv.core.commons</groupId>
+            <artifactId>archive</artifactId>
+            <version>${project-env-core.version}</version>
+            <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.graalvm.sdk</groupId>
-            <artifactId>graal-sdk</artifactId>
-            <version>${graalvm.version}</version>
-            <scope>provided</scope>
+            <groupId>io.projectenv.core.commons</groupId>
+            <artifactId>string-substitutor</artifactId>
+            <version>${project-env-core.version}</version>
+            <scope>test</scope>
         </dependency>
-
         <dependency>
             <groupId>org.assertj</groupId>
             <artifactId>assertj-core</artifactId>
@@ -100,6 +123,12 @@
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-engine</artifactId>
             <version>${junit-jupiter.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.github.stefanbirkner</groupId>
+            <artifactId>system-lambda</artifactId>
+            <version>${system-lambda.version}</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
@@ -181,8 +210,26 @@
                         <configuration>
                             <buildArgs>--enable-url-protocols=https --no-fallback</buildArgs>
                             <mainClass>io.projectenv.shell.ProjectEnvShell</mainClass>
-                            <imageName>project-env-shell</imageName>
+                            <imageName>${shell.binary}</imageName>
                         </configuration>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-assembly-plugin</artifactId>
+                        <version>${maven-assembly-plugin.version}</version>
+                        <executions>
+                            <execution>
+                                <goals>
+                                    <goal>single</goal>
+                                </goals>
+                                <phase>package</phase>
+                                <configuration>
+                                    <descriptors>
+                                        <descriptor>src/assembly/assembly.xml</descriptor>
+                                    </descriptors>
+                                </configuration>
+                            </execution>
+                        </executions>
                     </plugin>
                 </plugins>
             </build>
