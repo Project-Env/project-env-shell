@@ -15,6 +15,13 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
+        <sonar.projectName>project-env-shell</sonar.projectName>
+        <sonar.projectKey>Project-Env_project-env-shell</sonar.projectKey>
+        <sonar.moduleKey>${project.artifactId}</sonar.moduleKey>
+        <sonar.organization>project-env</sonar.organization>
+        <sonar.host.url>https://sonarcloud.io</sonar.host.url>
+        <sonar.coverage.exclusions>**/*Exception.java,**/nativeimage/**</sonar.coverage.exclusions>
+
         <shell.binary>project-env-shell</shell.binary>
         <shell.assembly.id>binary</shell.assembly.id>
         <shell.assembly.format>tar.gz</shell.assembly.format>
@@ -136,12 +143,6 @@
     <profiles>
         <profile>
             <id>sonar</id>
-            <properties>
-                <sonar.projectKey>Project-Env_project-env-shell</sonar.projectKey>
-                <sonar.organization>project-env</sonar.organization>
-                <sonar.host.url>https://sonarcloud.io</sonar.host.url>
-                <sonar.coverage.exclusions>**/nativeimage/**/*</sonar.coverage.exclusions>
-            </properties>
             <build>
                 <plugins>
                     <plugin>
