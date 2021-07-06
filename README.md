@@ -5,6 +5,11 @@
 
 The Project-Env Shell integration application allows to use tools setup by the Project-Env CLI in a shell environment. See https://project-env.github.io for more details.
 
+## Installation
+
+### Homebrew
+`brew install --cask project-env/tap/project-env-shell`
+
 ## Shell integration examples
 
 ### ZSH
@@ -14,7 +19,7 @@ The Project-Env Shell integration application allows to use tools setup by the P
 if [[ ! -f "project-env.toml" ]]; then
     zsh -i
 else
-  project-env-shell refresh --config-file="project-env.toml" --output-template=zsh --output-file=.project-env
+  project-env-shell --config-file="project-env.toml" --output-template=zsh --output-file=.project-env
   source .project-env
   zsh -i
 fi
