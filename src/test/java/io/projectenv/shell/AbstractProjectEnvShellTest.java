@@ -39,14 +39,13 @@ abstract class AbstractProjectEnvShellTest {
     @Test
     void executeProjectEnvShell(@TempDir File projectRoot) throws Exception {
         var pathElement = setupProjectEnvCli();
-        var path = createdJoinedPathVariable(pathElement);
 
         copyResourceToTarget("git-hook", new File(projectRoot, "hooks"));
         copyResourceToTarget("settings.xml", projectRoot);
         copyResourceToTarget("settings-user.xml", projectRoot);
         File configFile = copyResourceToTarget("project-env.toml", projectRoot);
 
-        executeAndAssertRefresh(path, projectRoot, configFile);
+        executeAndAssertRefresh(pathElement, projectRoot, configFile);
     }
 
     @AfterEach
@@ -122,12 +121,6 @@ abstract class AbstractProjectEnvShellTest {
         ArchiveExtractorFactory.createArchiveExtractor().extractArchive(archive, target);
     }
 
-    private String createdJoinedPathVariable(File pathElement) throws IOException {
-        var originalPath = System.getenv().get("PATH");
-
-        return pathElement.getCanonicalPath() + File.pathSeparator + originalPath;
-    }
-
     private File createTempDirectory() throws IOException {
         return createTempDirectory(null, null);
     }
@@ -140,12 +133,12 @@ abstract class AbstractProjectEnvShellTest {
         return temporaryFolder;
     }
 
-    private void executeAndAssertRefresh(String path, File projectRoot, File configFile) throws Exception {
+    private void executeAndAssertRefresh(File pathElement, File projectRoot, File configFile) throws Exception {
         String outputTemplate = "zsh";
         File outputFile = new File(projectRoot, "project-env-output.sh");
 
         executeProjectEnvShell(
-                path,
+                pathElement,
                 "--config-file=" + configFile.getAbsolutePath(),
                 "--output-template=" + outputTemplate,
                 "--output-file=" + outputFile.getAbsolutePath(),
@@ -158,7 +151,7 @@ abstract class AbstractProjectEnvShellTest {
         assertThat(actualContent).containsExactlyElementsOf(expectedContent);
     }
 
-    protected abstract void executeProjectEnvShell(String path, String... params) throws Exception;
+    protected abstract void executeProjectEnvShell(File pathElement, String... params) throws Exception;
 
     private File copyResourceToTarget(String resource, File target) throws Exception {
         File resultingFile = new File(target, resource);
