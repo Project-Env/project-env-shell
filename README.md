@@ -14,20 +14,32 @@ The Project-Env Shell integration application allows to use tools setup by the P
 
 ### ZSH
 
-```shell
+To use Project-Env managed tools in your ZSH shell, create the following script:
+
+```zsh
 #!/bin/zsh
 if [[ ! -f "project-env.toml" ]]; then
-    zsh -i
+    zsh --login
 else
   project-env-shell --config-file="project-env.toml" --output-template=zsh --output-file=.project-env
   source .project-env
-  zsh -i
+  zsh --login
 fi
 ```
 
-### Cygwin
+To use the tools, you now only need to call the script to setup the shell. 
 
-```shell
+For example, if you want to start your IntelliJ Terminal with Project-Env tools setup, configure the following command in the Terminal settings:
+
+```zsh
+/bin/zsh --login -c <path to script>
+```
+
+### Cygwin (started through Windows CMD)
+
+To use Project-Env managed tools in your Cygwin shell, create the following script:
+
+```batch
 @echo off
 if not exist project-env.toml (
     bash.exe
@@ -36,3 +48,5 @@ if not exist project-env.toml (
     bash.exe --init-file .project-env
 )
 ```
+
+To use the tools, you now only need to call the script to setup the shell.
