@@ -63,6 +63,7 @@ public class ProjectEnvFeature implements Feature {
 
             registerTemplate("github-actions.peb");
             registerTemplate("zsh.peb");
+            registerTemplate("cygwin.peb");
         } catch (IOException e) {
             throw new IllegalStateException("failed to register templates for usage in native-image");
         }
