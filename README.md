@@ -19,11 +19,11 @@ To use Project-Env managed tools in your ZSH shell, create the following script:
 ```zsh
 #!/bin/zsh
 if [[ ! -f "project-env.toml" ]]; then
-    zsh --login
+    zsh
 else
   project-env-shell --config-file="project-env.toml" --output-template=zsh --output-file=.project-env
   source .project-env
-  zsh --login
+  zsh
 fi
 ```
 
