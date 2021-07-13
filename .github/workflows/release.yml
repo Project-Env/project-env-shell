@@ -55,6 +55,20 @@ jobs:
         env:
           GITHUB_USER: ${{ github.actor }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Sign and notarize executable
+        if: ${{ matrix.os == 'macos-latest'}}
+        run: ../etc/github-actions/sign-and-notarize-executable.sh
+        working-directory: target
+        env:
+          EXECUTABLE_NAME: project-env-shell
+          EXECUTABLE_PACKAGE_NAME: shell-${{ github.event.inputs.version }}-${{ matrix.shell_assembly_id }}.${{ matrix.shell_assembly_format }}
+          EXECUTABLE_ID: io.projectenv.shell
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+          APPLE_ID_PASSWORD: ${{ secrets.APPLE_ID_PASSWORD }}
+          APPLE_ID_TEAM: ${{ secrets.APPLE_ID_TEAM }}
+          APPLE_CERTIFICATE: ${{ secrets.APPLE_CERTIFICATE }}
+          APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
+          APPLE_IDENTITY: ${{ secrets.APPLE_IDENTITY }}
       - uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
