@@ -4,11 +4,11 @@ import io.projectenv.core.cli.api.ToolInfo;
 import io.projectenv.core.cli.api.ToolInfoParser;
 import io.projectenv.core.commons.process.ProcessEnvironmentHelper;
 import io.projectenv.core.commons.process.ProcessHelper;
-import io.projectenv.core.commons.process.ProcessOutputWriterAccessor;
 import io.projectenv.shell.template.TemplateProcessor;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.SystemUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
@@ -19,6 +19,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
+
+import static io.projectenv.core.commons.process.ProcessOutputWriterAccessor.getProcessInfoWriter;
 
 @Command(name = "project-env-shell")
 public final class ProjectEnvShell implements Callable<Integer> {
@@ -41,25 +43,35 @@ public final class ProjectEnvShell implements Callable<Integer> {
     private boolean debug;
 
     @Override
-    public Integer call() throws ProjectEnvShellException {
-        if (!configFile.exists()) {
-            throw new ProjectEnvShellException("config file not found");
+    public Integer call() {
+        try {
+            if (!configFile.exists()) {
+                return handleError("config file {0} not found", configFile);
+            }
+
+            var projectEnvCliExecutable = ProcessEnvironmentHelper.resolveExecutableFromPath(PROJECT_ENV_CLI_NAME);
+            if (projectEnvCliExecutable == null || !projectEnvCliExecutable.exists()) {
+                return handleError("cannot resolve Project-Env CLI from PATH variable");
+            }
+
+            var rawToolInfos = executeProjectEnvCli(projectEnvCliExecutable, configFile);
+            if (debug) {
+                getProcessInfoWriter().write("resulting tool infos: " + rawToolInfos);
+            }
+
+            var toolInfos = ToolInfoParser.fromJson(rawToolInfos);
+            writeOutput(toolInfos);
+
+            return 0;
+        } catch (Exception e) {
+            return handleError("failed to execute shell: {0}", ExceptionUtils.getRootCauseMessage(e));
         }
+    }
 
-        var projectEnvCliExecutable = ProcessEnvironmentHelper.resolveExecutableFromPath(PROJECT_ENV_CLI_NAME);
-        if (projectEnvCliExecutable == null || !projectEnvCliExecutable.exists()) {
-            throw new ProjectEnvShellException("cannot resolve Project-Env CLI from PATH variable");
-        }
+    private Integer handleError(String outputPattern, Object... outputArgs) {
+        getProcessInfoWriter().write(outputPattern, outputArgs);
 
-        var rawToolInfos = executeProjectEnvCli(projectEnvCliExecutable, configFile);
-        if (debug) {
-            ProcessOutputWriterAccessor.getProcessInfoWriter().write("resulting tool infos: " + rawToolInfos);
-        }
-
-        var toolInfos = ToolInfoParser.fromJson(rawToolInfos);
-        writeOutput(toolInfos);
-
-        return 0;
+        return CommandLine.ExitCode.SOFTWARE;
     }
 
     private String executeProjectEnvCli(File projectEnvCliExecutable, File configurationFile) throws ProjectEnvShellException {
@@ -91,7 +103,7 @@ public final class ProjectEnvShell implements Callable<Integer> {
             FileUtils.write(outputFile, content, StandardCharsets.UTF_8);
 
             if (!SystemUtils.IS_OS_WINDOWS && !outputFile.setExecutable(true)) {
-                ProcessOutputWriterAccessor.getProcessInfoWriter().write("failed to make file {0} executable", outputFile.getCanonicalPath());
+                getProcessInfoWriter().write("failed to make file {0} executable", outputFile.getCanonicalPath());
             }
         } catch (IOException e) {
             throw new ProjectEnvShellException("failed to execute Project-Env CLI", e);
