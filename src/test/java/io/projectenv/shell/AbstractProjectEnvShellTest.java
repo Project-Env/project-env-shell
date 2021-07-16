@@ -19,6 +19,7 @@ import java.io.*;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -37,7 +38,7 @@ abstract class AbstractProjectEnvShellTest {
     }
 
     @Test
-    void executeProjectEnvShell(@TempDir File projectRoot) throws Exception {
+    void executeProjectEnvShellWithFileOutput(@TempDir File projectRoot) throws Exception {
         var pathElement = setupProjectEnvCli();
 
         copyResourceToTarget("git-hook", new File(projectRoot, "hooks"));
@@ -45,7 +46,47 @@ abstract class AbstractProjectEnvShellTest {
         copyResourceToTarget("settings-user.xml", projectRoot);
         File configFile = copyResourceToTarget("project-env.toml", projectRoot);
 
-        executeAndAssertRefresh(pathElement, projectRoot, configFile);
+        String outputTemplate = "zsh";
+        File outputFile = new File(projectRoot, "project-env-output.sh");
+
+        var output = executeProjectEnvShell(
+                pathElement,
+                "--config-file=" + configFile.getAbsolutePath(),
+                "--output-template=" + outputTemplate,
+                "--output-file=" + outputFile.getAbsolutePath(),
+                "--project-root=" + projectRoot.getAbsolutePath(),
+                "--debug"
+        );
+
+        assertThat(output).isEmpty();
+
+        List<String> expectedContent = readAndPrepareExpectedOutput(projectRoot);
+        List<String> actualContent = readAndPrepareActualOutput(outputFile);
+        assertThat(actualContent).containsExactlyElementsOf(expectedContent);
+    }
+
+    @Test
+    void executeProjectEnvShellWithStdOutput(@TempDir File projectRoot) throws Exception {
+        var pathElement = setupProjectEnvCli();
+
+        copyResourceToTarget("git-hook", new File(projectRoot, "hooks"));
+        copyResourceToTarget("settings.xml", projectRoot);
+        copyResourceToTarget("settings-user.xml", projectRoot);
+        File configFile = copyResourceToTarget("project-env.toml", projectRoot);
+
+        String outputTemplate = "zsh";
+
+        var output = executeProjectEnvShell(
+                pathElement,
+                "--config-file=" + configFile.getAbsolutePath(),
+                "--output-template=" + outputTemplate,
+                "--project-root=" + projectRoot.getAbsolutePath(),
+                "--debug"
+        );
+
+        List<String> expectedContent = readAndPrepareExpectedOutput(projectRoot);
+        List<String> actualContent = readAndPrepareActualOutput(output);
+        assertThat(actualContent).containsExactlyElementsOf(expectedContent);
     }
 
     @AfterEach
@@ -133,25 +174,7 @@ abstract class AbstractProjectEnvShellTest {
         return temporaryFolder;
     }
 
-    private void executeAndAssertRefresh(File pathElement, File projectRoot, File configFile) throws Exception {
-        String outputTemplate = "zsh";
-        File outputFile = new File(projectRoot, "project-env-output.sh");
-
-        executeProjectEnvShell(
-                pathElement,
-                "--config-file=" + configFile.getAbsolutePath(),
-                "--output-template=" + outputTemplate,
-                "--output-file=" + outputFile.getAbsolutePath(),
-                "--project-root=" + projectRoot.getAbsolutePath(),
-                "--debug"
-        );
-
-        List<String> expectedContent = readAndPrepareExpectedOutput(projectRoot);
-        List<String> actualContent = readAndPrepareActualOutput(outputFile);
-        assertThat(actualContent).containsExactlyElementsOf(expectedContent);
-    }
-
-    protected abstract void executeProjectEnvShell(File pathElement, String... params) throws Exception;
+    protected abstract String executeProjectEnvShell(File pathElement, String... params) throws Exception;
 
     private File copyResourceToTarget(String resource, File target) throws Exception {
         File resultingFile = new File(target, resource);
@@ -179,9 +202,13 @@ abstract class AbstractProjectEnvShellTest {
     }
 
     private List<String> readAndPrepareActualOutput(File outputFile) throws Exception {
-        return FileUtils.readLines(outputFile, StandardCharsets.UTF_8)
-                .stream()
+        return readAndPrepareActualOutput(FileUtils.readFileToString(outputFile, StandardCharsets.UTF_8));
+    }
+
+    private List<String> readAndPrepareActualOutput(String output) throws Exception {
+        return Arrays.stream(StringUtils.split(output, '\n'))
                 .filter(StringUtils::isNotBlank)
+                .map(StringUtils::trim)
                 .map(line -> line.replace(File.separator, "/"))
                 .map(line -> line.replaceAll("-[^/]{43}/", "-SHA256/"))
                 .collect(Collectors.toList());

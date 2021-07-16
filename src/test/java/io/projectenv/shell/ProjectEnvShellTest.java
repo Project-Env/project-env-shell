@@ -20,15 +20,22 @@ import static org.assertj.core.api.Assertions.assertThat;
 class ProjectEnvShellTest extends AbstractProjectEnvShellTest {
 
     @Override
-    protected void executeProjectEnvShell(File pathElement, String... params) throws Exception {
-        withEnvironmentVariable(getPathVariableName(), createExtendedPathValue(pathElement)).execute(() -> {
-            ProjectEnvShell.executeProjectEnvShell(params);
-        });
+    protected String executeProjectEnvShell(File pathElement, String... params) throws Exception {
+        try (var processOutputWriterAccessor = Mockito.mockStatic(ProcessOutputWriterAccessor.class, Mockito.CALLS_REAL_METHODS)) {
+            var processOutputWriter = new CollectingProcessOutputWriter();
+            processOutputWriterAccessor.when(ProcessOutputWriterAccessor::getProcessResultWriter).thenReturn(processOutputWriter);
+
+            withEnvironmentVariable(getPathVariableName(), createExtendedPathValue(pathElement)).execute(() -> {
+                ProjectEnvShell.executeProjectEnvShell(params);
+            });
+
+            return String.join("\n", processOutputWriter.OUTPUT_LINES);
+        }
     }
 
     @Test
     void testConfigFileNotExisting(@TempDir File tempDir) {
-        try (var processOutputWriterAccessor = Mockito.mockStatic(ProcessOutputWriterAccessor.class)) {
+        try (var processOutputWriterAccessor = Mockito.mockStatic(ProcessOutputWriterAccessor.class, Mockito.CALLS_REAL_METHODS)) {
             var processOutputWriter = new CollectingProcessOutputWriter();
             processOutputWriterAccessor.when(ProcessOutputWriterAccessor::getProcessInfoWriter).thenReturn(processOutputWriter);
 
@@ -44,7 +51,7 @@ class ProjectEnvShellTest extends AbstractProjectEnvShellTest {
     @Test
     void testNotExistingCli(@TempDir File tempDir) throws Exception {
         withEnvironmentVariable("PATH", "empty").execute(() -> {
-            try (var processOutputWriterAccessor = Mockito.mockStatic(ProcessOutputWriterAccessor.class)) {
+            try (var processOutputWriterAccessor = Mockito.mockStatic(ProcessOutputWriterAccessor.class, Mockito.CALLS_REAL_METHODS)) {
                 var processOutputWriter = new CollectingProcessOutputWriter();
                 processOutputWriterAccessor.when(ProcessOutputWriterAccessor::getProcessInfoWriter).thenReturn(processOutputWriter);
 
