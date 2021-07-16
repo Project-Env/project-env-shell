@@ -4,6 +4,7 @@ import io.projectenv.core.cli.api.ToolInfo;
 import io.projectenv.core.cli.api.ToolInfoParser;
 import io.projectenv.core.commons.process.ProcessEnvironmentHelper;
 import io.projectenv.core.commons.process.ProcessHelper;
+import io.projectenv.core.commons.process.ProcessOutputWriterAccessor;
 import io.projectenv.shell.template.TemplateProcessor;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -21,6 +22,7 @@ import java.util.Map;
 import java.util.concurrent.Callable;
 
 import static io.projectenv.core.commons.process.ProcessOutputWriterAccessor.getProcessInfoWriter;
+import static io.projectenv.core.commons.process.ProcessOutputWriterAccessor.getProcessResultWriter;
 
 @Command(name = "project-env-shell")
 public final class ProjectEnvShell implements Callable<Integer> {
@@ -36,7 +38,7 @@ public final class ProjectEnvShell implements Callable<Integer> {
     @Option(names = {"--output-template"}, required = true)
     private String outputTemplate;
 
-    @Option(names = {"--output-file"}, required = true)
+    @Option(names = {"--output-file"})
     private File outputFile;
 
     @Option(names = {"--debug"})
@@ -50,7 +52,7 @@ public final class ProjectEnvShell implements Callable<Integer> {
             }
 
             var projectEnvCliExecutable = ProcessEnvironmentHelper.resolveExecutableFromPath(PROJECT_ENV_CLI_NAME);
-            if (projectEnvCliExecutable == null || !projectEnvCliExecutable.exists()) {
+            if (projectEnvCliExecutable == null) {
                 return handleError("cannot resolve Project-Env CLI from PATH variable");
             }
 
@@ -74,40 +76,45 @@ public final class ProjectEnvShell implements Callable<Integer> {
         return CommandLine.ExitCode.SOFTWARE;
     }
 
-    private String executeProjectEnvCli(File projectEnvCliExecutable, File configurationFile) throws ProjectEnvShellException {
-        try {
-            var processBuilder = new ProcessBuilder()
-                    .command(
-                            projectEnvCliExecutable.getCanonicalPath(),
-                            "--project-root",
-                            projectRoot.getCanonicalPath(),
-                            "--config-file",
-                            configurationFile.getCanonicalPath()
-                    )
-                    .directory(projectRoot);
+    private String executeProjectEnvCli(File projectEnvCliExecutable, File configurationFile) throws IOException {
+        var processBuilder = new ProcessBuilder()
+                .command(
+                        projectEnvCliExecutable.getCanonicalPath(),
+                        "--project-root",
+                        projectRoot.getCanonicalPath(),
+                        "--config-file",
+                        configurationFile.getCanonicalPath()
+                )
+                .directory(projectRoot);
 
-            var processResult = ProcessHelper.executeProcess(processBuilder, true);
-            if (processResult.getExitCode() != 0) {
-                throw new ProjectEnvShellException("Project-Env CLI exited with a non zero exit code");
-            }
+        var processResult = ProcessHelper.executeProcess(processBuilder, true);
+        if (processResult.getExitCode() != 0) {
+            throw new ProjectEnvShellException("Project-Env CLI exited with a non zero exit code");
+        }
 
-            return processResult.getOutput().orElse(StringUtils.EMPTY);
-        } catch (IOException e) {
-            throw new ProjectEnvShellException("failed to execute Project-Env CLI", e);
+        return processResult.getOutput().orElse(StringUtils.EMPTY);
+    }
+
+    private void writeOutput(Map<String, List<ToolInfo>> toolInfos) throws IOException {
+        String content = TemplateProcessor.processTemplate(outputTemplate, toolInfos);
+
+        if (outputFile != null) {
+            writeOutputToFile(content, outputFile);
+        } else {
+            writeOutputToStdOutput(content);
         }
     }
 
-    private void writeOutput(Map<String, List<ToolInfo>> toolInfos) throws ProjectEnvShellException {
-        try {
-            String content = TemplateProcessor.processTemplate(outputTemplate, toolInfos);
-            FileUtils.write(outputFile, content, StandardCharsets.UTF_8);
+    private void writeOutputToFile(String content, File target) throws IOException {
+        FileUtils.write(target, content, StandardCharsets.UTF_8);
 
-            if (!SystemUtils.IS_OS_WINDOWS && !outputFile.setExecutable(true)) {
-                getProcessInfoWriter().write("failed to make file {0} executable", outputFile.getCanonicalPath());
-            }
-        } catch (IOException e) {
-            throw new ProjectEnvShellException("failed to execute Project-Env CLI", e);
+        if (!SystemUtils.IS_OS_WINDOWS && !target.setExecutable(true)) {
+            getProcessInfoWriter().write("failed to make file {0} executable", target.getCanonicalPath());
         }
+    }
+
+    private void writeOutputToStdOutput(String content) {
+        getProcessResultWriter().write(content);
     }
 
     public static void main(String[] args) {

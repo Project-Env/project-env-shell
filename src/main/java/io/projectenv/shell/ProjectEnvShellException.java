@@ -1,6 +1,8 @@
 package io.projectenv.shell;
 
-public class ProjectEnvShellException extends Exception {
+import java.io.IOException;
+
+public class ProjectEnvShellException extends IOException {
 
     public ProjectEnvShellException(String message) {
         super(message);
