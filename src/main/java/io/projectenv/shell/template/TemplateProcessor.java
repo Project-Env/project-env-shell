@@ -18,7 +18,7 @@ import java.util.regex.Pattern;
 
 public final class TemplateProcessor {
 
-    private static final String PEBBLE_TEMPLATE_EXT = ".peb";
+    public static final String PEBBLE_TEMPLATE_EXT = ".peb";
 
     private static final PebbleEngine PEBBLE_ENGINE = new PebbleEngine
             .Builder()
