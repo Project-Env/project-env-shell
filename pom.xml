@@ -29,7 +29,7 @@
         <project-env-core.version>3.0.5</project-env-core.version>
         <picocli.version>4.6.1</picocli.version>
         <graalvm.version>21.2.0</graalvm.version>
-        <junit-jupiter.version>5.8.0</junit-jupiter.version>
+        <junit-jupiter.version>5.8.1</junit-jupiter.version>
         <assertj-core.version>3.20.2</assertj-core.version>
         <pebble.version>3.1.5</pebble.version>
         <slf4j.version>1.7.32</slf4j.version>
