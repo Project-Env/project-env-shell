@@ -26,7 +26,7 @@
         <shell.assembly.id>binary</shell.assembly.id>
         <shell.assembly.format>tar.gz</shell.assembly.format>
 
-        <project-env-core.version>3.0.5</project-env-core.version>
+        <project-env-core.version>3.3.0</project-env-core.version>
         <picocli.version>4.6.1</picocli.version>
         <graalvm.version>21.2.0</graalvm.version>
         <junit-jupiter.version>5.7.2</junit-jupiter.version>
