@@ -5,7 +5,7 @@ import com.google.gson.annotations.SerializedName;
 import com.oracle.svm.core.annotate.AutomaticFeature;
 import io.projectenv.core.cli.api.ToolInfo;
 import io.projectenv.core.commons.nativeimage.NativeImageHelper;
-import io.projectenv.core.commons.process.ProcessOutputWriterAccessor;
+import io.projectenv.core.commons.process.ProcessOutput;
 import io.projectenv.shell.template.TemplateProcessor;
 import org.graalvm.nativeimage.hosted.Feature;
 import org.graalvm.nativeimage.hosted.RuntimeClassInitialization;
@@ -36,7 +36,7 @@ public class ProjectEnvFeature implements Feature {
     }
 
     private void configureProcessOutputWriter() {
-        RuntimeClassInitialization.initializeAtBuildTime(ProcessOutputWriterAccessor.class);
+        RuntimeClassInitialization.initializeAtBuildTime(ProcessOutput.class);
     }
 
     private void registerToolInfo() {

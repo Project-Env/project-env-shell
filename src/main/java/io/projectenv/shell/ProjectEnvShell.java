@@ -4,6 +4,7 @@ import io.projectenv.core.cli.api.ToolInfo;
 import io.projectenv.core.cli.api.ToolInfoParser;
 import io.projectenv.core.commons.process.ProcessEnvironmentHelper;
 import io.projectenv.core.commons.process.ProcessHelper;
+import io.projectenv.core.commons.process.ProcessOutput;
 import io.projectenv.shell.template.TemplateProcessor;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -19,9 +20,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
-
-import static io.projectenv.core.commons.process.ProcessOutputWriterAccessor.getProcessInfoWriter;
-import static io.projectenv.core.commons.process.ProcessOutputWriterAccessor.getProcessResultWriter;
 
 @Command(name = "project-env-shell")
 public final class ProjectEnvShell implements Callable<Integer> {
@@ -46,6 +44,10 @@ public final class ProjectEnvShell implements Callable<Integer> {
     @Override
     public Integer call() {
         try {
+            if (debug) {
+                ProcessOutput.activateDebugMode();
+            }
+
             if (!configFile.exists()) {
                 return handleError("config file {0} not found", configFile);
             }
@@ -56,21 +58,20 @@ public final class ProjectEnvShell implements Callable<Integer> {
             }
 
             var rawToolInfos = executeProjectEnvCli(projectEnvCliExecutable, configFile);
-            if (debug) {
-                getProcessInfoWriter().write("resulting tool infos: " + rawToolInfos);
-            }
+            ProcessOutput.writeDebugMessage("resulting tool infos: {0}", rawToolInfos);
 
             var toolInfos = ToolInfoParser.fromJson(rawToolInfos);
             writeOutput(toolInfos);
 
             return 0;
         } catch (Exception e) {
+            ProcessOutput.writeDebugMessage(e);
             return handleError("failed to execute shell: {0}", ExceptionUtils.getRootCauseMessage(e));
         }
     }
 
     private Integer handleError(String outputPattern, Object... outputArgs) {
-        getProcessInfoWriter().write(outputPattern, outputArgs);
+        ProcessOutput.writeInfoMessage(outputPattern, outputArgs);
 
         return CommandLine.ExitCode.SOFTWARE;
     }
@@ -91,7 +92,7 @@ public final class ProjectEnvShell implements Callable<Integer> {
             throw new ProjectEnvShellException("Project-Env CLI exited with a non zero exit code");
         }
 
-        return processResult.getOutput().orElse(StringUtils.EMPTY);
+        return processResult.getStdOutput().orElse(StringUtils.EMPTY);
     }
 
     private void writeOutput(Map<String, List<ToolInfo>> toolInfos) throws IOException {
@@ -108,12 +109,12 @@ public final class ProjectEnvShell implements Callable<Integer> {
         FileUtils.write(target, content, StandardCharsets.UTF_8);
 
         if (!SystemUtils.IS_OS_WINDOWS && !target.setExecutable(true)) {
-            getProcessInfoWriter().write("failed to make file {0} executable", target.getCanonicalPath());
+            ProcessOutput.writeInfoMessage("failed to make file {0} executable", target.getCanonicalPath());
         }
     }
 
     private void writeOutputToStdOutput(String content) {
-        getProcessResultWriter().write(content);
+        ProcessOutput.writeResult(content);
     }
 
     public static void main(String[] args) {

@@ -26,7 +26,7 @@ class ProjectEnvShellIT extends AbstractProjectEnvShellTest {
         var processResult = ProcessHelper.executeProcess(processBuilder, true);
         assertThat(processResult.getExitCode()).describedAs("process exit code").isZero();
 
-        return processResult.getOutput().orElse(StringUtils.EMPTY);
+        return processResult.getStdOutput().orElse(StringUtils.EMPTY);
     }
 
 }
