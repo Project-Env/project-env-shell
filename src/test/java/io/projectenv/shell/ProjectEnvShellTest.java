@@ -1,5 +1,6 @@
 package io.projectenv.shell;
 
+import io.projectenv.core.commons.system.TestEnvironmentVariables;
 import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -9,8 +10,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
+import java.util.Map;
 
-import static com.github.stefanbirkner.systemlambda.SystemLambda.withEnvironmentVariable;
 import static io.projectenv.core.commons.process.ProcessEnvironmentHelper.createExtendedPathValue;
 import static io.projectenv.core.commons.process.ProcessEnvironmentHelper.getPathVariableName;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -23,9 +24,9 @@ class ProjectEnvShellTest extends AbstractProjectEnvShellTest {
         try (var outputStream = new ByteArrayOutputStream()) {
             System.setOut(new PrintStream(outputStream));
 
-            withEnvironmentVariable(getPathVariableName(), createExtendedPathValue(pathElement)).execute(() -> {
+            try (var mock = TestEnvironmentVariables.overlayEnv(Map.of(getPathVariableName(), createExtendedPathValue(pathElement)))) {
                 ProjectEnvShell.executeProjectEnvShell(params);
-            });
+            }
 
             return outputStream.toString(StandardCharsets.UTF_8);
         } finally {
@@ -52,7 +53,7 @@ class ProjectEnvShellTest extends AbstractProjectEnvShellTest {
 
     @Test
     void testNotExistingCli(@TempDir File tempDir) throws Exception {
-        withEnvironmentVariable("PATH", "empty").execute(() -> {
+        try (var mock = TestEnvironmentVariables.overlayEnv(Map.of("PATH", "empty"))) {
             var originalStream = System.out;
             try (var outputStream = new ByteArrayOutputStream()) {
                 System.setErr(new PrintStream(outputStream));
@@ -69,7 +70,7 @@ class ProjectEnvShellTest extends AbstractProjectEnvShellTest {
             } finally {
                 System.setOut(originalStream);
             }
-        });
+        }
     }
 
 }
