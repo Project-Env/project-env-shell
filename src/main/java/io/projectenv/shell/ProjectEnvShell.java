@@ -1,7 +1,5 @@
 package io.projectenv.shell;
 
-import io.projectenv.core.cli.api.ToolInfo;
-import io.projectenv.core.cli.api.ToolInfoParser;
 import io.projectenv.core.commons.process.ProcessEnvironmentHelper;
 import io.projectenv.core.commons.process.ProcessHelper;
 import io.projectenv.core.commons.process.ProcessOutput;

@@ -5,7 +5,7 @@ import com.mitchellbosecke.pebble.extension.AbstractExtension;
 import com.mitchellbosecke.pebble.extension.Filter;
 import com.mitchellbosecke.pebble.template.EvaluationContext;
 import com.mitchellbosecke.pebble.template.PebbleTemplate;
-import io.projectenv.core.cli.api.ToolInfo;
+import io.projectenv.shell.ToolInfo;
 import org.apache.commons.lang3.ClassPathUtils;
 import org.apache.commons.lang3.StringUtils;
 
