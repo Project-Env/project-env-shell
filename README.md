@@ -3,7 +3,7 @@
 ![Build](https://github.com/Project-Env/project-env-shell/workflows/Build/badge.svg)
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=Project-Env_project-env-shell&metric=alert_status)](https://sonarcloud.io/dashboard?id=Project-Env_project-env-shell)
 
-The Project-Env Shell integration application allows to use tools setup by the Project-Env CLI in a shell environment. See https://project-env.github.io for more details.
+The Project-Env Shell integration application allows to use tools setup by the Project-Env CLI in a shell environment. See https://projectenv.io for more details.
 
 ## Installation
 
