@@ -44,7 +44,8 @@ To use Project-Env managed tools in your Cygwin shell, create the following scri
 if not exist project-env.toml (
     bash.exe
 ) else (
-    project-env-cli.exe --config-file=project-env.toml --output-template=cygwin --output-file=.project-env
+    project-env-shell.exe --config-file=project-env.toml --output-template=cygwin --output-file=.project-env
+    dos2unix .project-env
     bash.exe --init-file .project-env
 )
 ```
