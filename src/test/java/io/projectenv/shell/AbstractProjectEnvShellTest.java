@@ -22,6 +22,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -197,7 +198,6 @@ abstract class AbstractProjectEnvShellTest {
                 .map(line -> line.replace("NODE_PLATFORM", getNodePlatformName()))
                 .map(line -> line.replace("NODE_BIN_PATH", getNodeBinPath()))
                 .map(line -> line.replace("JDK_HOME", getJdkHome()))
-                .map(line -> line.replace(File.separator, "/"))
                 .collect(Collectors.toList());
     }
 
@@ -209,14 +209,14 @@ abstract class AbstractProjectEnvShellTest {
         return Arrays.stream(StringUtils.split(output, '\n'))
                 .filter(StringUtils::isNotBlank)
                 .map(StringUtils::trim)
-                .map(line -> line.replace(File.separator, "/"))
                 .map(line -> line.replaceAll("-[^/]{43}/", "-SHA256/"))
                 .collect(Collectors.toList());
     }
 
     private String getCanonicalProjectPath(File projectRoot) {
         try {
-            return projectRoot.getCanonicalPath();
+            return projectRoot.getCanonicalPath()
+                    .replaceAll(Pattern.quote("\\"), "/");
         } catch (IOException e) {
             throw new IllegalArgumentException("invalid file", e);
         }

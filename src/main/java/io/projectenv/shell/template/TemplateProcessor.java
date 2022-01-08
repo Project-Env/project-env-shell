@@ -13,7 +13,10 @@ import java.io.File;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
-import java.util.*;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.regex.Pattern;
 
 public final class TemplateProcessor {
@@ -75,12 +78,19 @@ public final class TemplateProcessor {
         @Override
         public Object apply(Object input, Map<String, Object> args, PebbleTemplate self, EvaluationContext context, int lineNumber) {
             try {
-                String canonicalPath = ((File) input).getCanonicalPath();
+                if (input instanceof File file) {
+                    String canonicalPath = file.getCanonicalPath();
 
-                // removes a trailing path separator if existing
-                canonicalPath = canonicalPath.replaceAll(Pattern.quote(File.separator) + "$", "");
+                    // removes a trailing path separator if existing
+                    canonicalPath = canonicalPath.replaceAll(Pattern.quote(File.separator) + "$", "");
 
-                return canonicalPath;
+                    // replaces all back-slashes with forward-slashes
+                    canonicalPath = canonicalPath.replaceAll(Pattern.quote("\\"), "/");
+
+                    return canonicalPath;
+                } else {
+                    return input;
+                }
             } catch (IOException e) {
                 throw new IllegalArgumentException("invalid file", e);
             }
