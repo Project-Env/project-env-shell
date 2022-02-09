@@ -27,7 +27,7 @@
         <shell.assembly.format>tar.gz</shell.assembly.format>
 
         <project-env-commons.version>1.1.0</project-env-commons.version>
-        <picocli.version>4.6.2</picocli.version>
+        <picocli.version>4.6.3</picocli.version>
         <immutable.version>2.9.0</immutable.version>
         <graalvm.version>21.3.0</graalvm.version>
         <junit-jupiter.version>5.8.2</junit-jupiter.version>
