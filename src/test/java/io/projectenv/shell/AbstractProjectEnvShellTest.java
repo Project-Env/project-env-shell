@@ -29,7 +29,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 abstract class AbstractProjectEnvShellTest {
 
-    private static final String PROJECT_ENV_CLI_VERSION = "3.3.0";
+    private static final String PROJECT_ENV_CLI_VERSION = "3.8.0";
 
     private File tempDirectory;
 
