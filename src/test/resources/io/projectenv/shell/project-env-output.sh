@@ -1,5 +1,6 @@
 #!/bin/zsh
 
+export MAVEN_HOME="BASE_PATH/.tools/maven-SHA256/apache-maven-3.6.3"
 export PATH="BASE_PATH/.tools/maven-SHA256/apache-maven-3.6.3/bin:$PATH"
 alias mvn="mvn -s BASE_PATH/settings-user.xml"
 
