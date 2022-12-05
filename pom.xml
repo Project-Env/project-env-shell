@@ -50,7 +50,7 @@
         <sonar-maven-plugin.version>3.9.1.2184</sonar-maven-plugin.version>
         <jacoco-maven-plugin.version>0.8.7</jacoco-maven-plugin.version>
         <maven-assembly-plugin.version>3.3.0</maven-assembly-plugin.version>
-        <native-maven-plugin.version>0.9.10</native-maven-plugin.version>
+        <native-maven-plugin.version>0.9.19</native-maven-plugin.version>
     </properties>
 
     <dependencies>
