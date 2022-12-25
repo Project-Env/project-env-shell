@@ -2,8 +2,6 @@ package io.projectenv.shell.nativeimage;
 
 import com.google.gson.TypeAdapterFactory;
 import com.google.gson.annotations.SerializedName;
-import com.oracle.svm.core.annotate.AutomaticFeature;
-import io.projectenv.core.commons.nativeimage.NativeImageHelper;
 import io.projectenv.core.commons.process.ProcessOutput;
 import io.projectenv.shell.ToolInfo;
 import io.projectenv.shell.template.TemplateProcessor;
@@ -13,11 +11,9 @@ import org.graalvm.nativeimage.hosted.RuntimeClassInitialization;
 import java.io.IOException;
 import java.util.Map;
 
-import static io.projectenv.core.commons.nativeimage.NativeImageHelper.registerClassForReflection;
-import static io.projectenv.core.commons.nativeimage.NativeImageHelper.registerResource;
+import static io.projectenv.core.commons.nativeimage.NativeImageHelper.*;
 
 
-@AutomaticFeature
 public class ProjectEnvFeature implements Feature {
 
     private static final String BASE_PACKAGE = "io.projectenv";
@@ -36,20 +32,16 @@ public class ProjectEnvFeature implements Feature {
     }
 
     private void configureProcessOutputWriter() {
-        RuntimeClassInitialization.initializeAtBuildTime(ProcessOutput.class);
+        initializeAtBuildTime(ProcessOutput.class);
     }
 
     private void registerToolInfo() {
-        NativeImageHelper.registerClassAndSubclassesForReflection(ToolInfo.class);
+        registerClassAndSubclassesForReflection(ToolInfo.class);
     }
 
     private void registerGsonSupport() {
-        try {
-            NativeImageHelper.registerService(TypeAdapterFactory.class);
-            NativeImageHelper.registerFieldsWithAnnotationForReflection(BASE_PACKAGE, SerializedName.class);
-        } catch (IOException e) {
-            throw new IllegalStateException("failed to register services for usage in native-image");
-        }
+        registerService(TypeAdapterFactory.class);
+        registerFieldsWithAnnotationForReflection(BASE_PACKAGE, SerializedName.class);
     }
 
     private void registerTemplates() {

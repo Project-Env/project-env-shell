@@ -26,10 +26,10 @@
         <shell.assembly.id>binary</shell.assembly.id>
         <shell.assembly.format>tar.gz</shell.assembly.format>
 
-        <project-env-commons.version>1.1.0</project-env-commons.version>
+        <project-env-commons.version>1.3.0</project-env-commons.version>
         <picocli.version>4.6.3</picocli.version>
         <immutable.version>2.9.0</immutable.version>
-        <graalvm.version>22.1.0</graalvm.version>
+        <graalvm.version>22.3.0</graalvm.version>
         <junit-jupiter.version>5.8.2</junit-jupiter.version>
         <assertj-core.version>3.22.0</assertj-core.version>
         <pebble.version>3.1.5</pebble.version>
@@ -50,7 +50,7 @@
         <sonar-maven-plugin.version>3.9.1.2184</sonar-maven-plugin.version>
         <jacoco-maven-plugin.version>0.8.7</jacoco-maven-plugin.version>
         <maven-assembly-plugin.version>3.3.0</maven-assembly-plugin.version>
-        <native-maven-plugin.version>0.9.10</native-maven-plugin.version>
+        <native-maven-plugin.version>0.9.19</native-maven-plugin.version>
     </properties>
 
     <dependencies>
@@ -133,12 +133,6 @@
         <dependency>
             <groupId>io.projectenv.commons</groupId>
             <artifactId>archive</artifactId>
-            <version>${project-env-commons.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>io.projectenv.commons</groupId>
-            <artifactId>system-test</artifactId>
             <version>${project-env-commons.version}</version>
             <scope>test</scope>
         </dependency>
@@ -249,7 +243,7 @@
                             </execution>
                         </executions>
                         <configuration>
-                            <buildArgs>--enable-url-protocols=https --no-fallback</buildArgs>
+                            <buildArgs>--enable-url-protocols=https --no-fallback --features=io.projectenv.shell.nativeimage.ProjectEnvFeature</buildArgs>
                             <mainClass>io.projectenv.shell.ProjectEnvShell</mainClass>
                             <imageName>${shell.binary}</imageName>
                         </configuration>
