@@ -8,6 +8,7 @@
 
     <formats>
         <format>${shell.assembly.format}</format>
+        <format>dir</format>
     </formats>
 
     <fileSets>
@@ -16,6 +17,7 @@
             <outputDirectory>.</outputDirectory>
             <includes>
                 <include>${shell.binary}*</include>
+                <include>*.dll</include>
             </includes>
             <excludes>
                 <exclude>*.txt</exclude>

@@ -9,10 +9,23 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [macos-latest, windows-latest, ubuntu-latest]
+        os: [ macos-latest, windows-latest, ubuntu-20.04 ]
+        include:
+          - os: ubuntu-20.04
+            shell_assembly_id: linux-amd64
+            shell_assembly_format: tar.gz
+          - os: windows-latest
+            shell_assembly_id: windows-amd64
+            shell_assembly_format: zip
+            gu_executable_ext: .cmd
+          - os: macos-latest
+            shell_assembly_id: macos-amd64
+            shell_assembly_format: tar.gz
     steps:
       - uses: ilammy/msvc-dev-cmd@v1
         if: ${{ matrix.os == 'windows-latest'}}
+      - run: ldd --version
+        if: ${{ matrix.os == 'ubuntu-20.04'}}
       - uses: actions/checkout@v3
       - uses: actions/cache@v3
         with:
@@ -25,12 +38,34 @@ jobs:
           key: ${{ runner.os }}-m2-${{ hashFiles('pom.xml') }}
           restore-keys: ${{ runner.os }}-m2
       - uses: Project-Env/project-env-github-action@v1.3.1
-      - run: mvn -B -s etc/m2/settings-ci.xml -Psonar -Pnative-image verify
-        if: ${{ matrix.os == 'ubuntu-latest' && github.actor != 'dependabot[bot]' }}
+      - uses: repolevedavaj/install-nsis@v1.0.0
+        with:
+          nsis-version: 3.08
+        if: ${{ matrix.os == 'windows-latest'}}
+      - run: mvn -B -s etc/m2/settings-ci.xml verify -Pnative-image -Psonar "-Dshell.assembly.id=${{ matrix.shell_assembly_id }}" "-Dshell.assembly.format=${{ matrix.shell_assembly_format }}"
+        if: ${{ matrix.os == 'ubuntu-20.04' && github.actor != 'dependabot[bot]' }}
         env:
+          GITHUB_USER: ${{ github.actor }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-      - run: mvn -B -s etc/m2/settings-ci.xml -Pnative-image verify
-        if: ${{ matrix.os != 'ubuntu-latest' || github.actor == 'dependabot[bot]' }}
+      - run: mvn -B -s etc/m2/settings-ci.xml verify -Pnative-image "-Dshell.assembly.id=${{ matrix.shell_assembly_id }}" "-Dshell.assembly.format=${{ matrix.shell_assembly_format }}"
+        if: ${{ matrix.os != 'ubuntu-20.04' || github.actor == 'dependabot[bot]' }}
         env:
+          GITHUB_USER: ${{ github.actor }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - uses: actions/upload-artifact@v3
+        with:
+          name: shell-dev-${{ matrix.shell_assembly_id }}.${{ matrix.shell_assembly_format }}
+          path: target/shell-dev-${{ matrix.shell_assembly_id }}.${{ matrix.shell_assembly_format }}
+      - uses: repolevedavaj/create-cli-app-nsis-installer@main
+        if: ${{ matrix.os == 'windows-latest'}}
+        with:
+          package-identifier: ProjectEnv.ProjectEnvShell
+          package-name: Project-Env Shell
+          package-version: dev
+          source-directory: target/shell-dev-windows-amd64
+      - uses: actions/upload-artifact@v3
+        if: ${{ matrix.os == 'windows-latest'}}
+        with:
+          name: shell-dev-${{ matrix.shell_assembly_id }}-setup.exe
+          path: target/shell-dev-${{ matrix.shell_assembly_id }}-setup.exe
