@@ -237,9 +237,9 @@
                         <executions>
                             <execution>
                                 <goals>
-                                    <goal>build</goal>
+                                    <goal>compile-no-fork</goal>
                                 </goals>
-                                <phase>package</phase>
+                                <phase>compile</phase>
                             </execution>
                         </executions>
                         <configuration>
@@ -262,6 +262,43 @@
                                     <descriptors>
                                         <descriptor>src/assembly/assembly.xml</descriptor>
                                     </descriptors>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>windows</id>
+            <activation>
+                <os>
+                    <family>windows</family>
+                </os>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-resources-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>copy-ddls</id>
+                                <goals>
+                                    <goal>copy-resources</goal>
+                                </goals>
+                                <phase>generate-resources</phase>
+                                <configuration>
+                                    <resources>
+                                        <resource>
+                                            <directory>${env.JAVA_HOME}/bin</directory>
+                                            <includes>
+                                                <include>vcruntime140_1.dll</include>
+                                                <include>vcruntime140.dll</include>
+                                            </includes>
+                                        </resource>
+                                    </resources>
+                                    <outputDirectory>${project.build.directory}</outputDirectory>
                                 </configuration>
                             </execution>
                         </executions>
