@@ -1,4 +1,4 @@
-#!/bin/zsh
+#!/bin/sh
 
 export MAVEN_HOME="BASE_PATH/.tools/maven-SHA256/apache-maven-3.6.3"
 export PATH="BASE_PATH/.tools/maven-SHA256/apache-maven-3.6.3/bin:$PATH"

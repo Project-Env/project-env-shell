@@ -47,7 +47,7 @@ abstract class AbstractProjectEnvShellTest {
         copyResourceToTarget("settings-user.xml", projectRoot);
         File configFile = copyResourceToTarget("project-env.toml", projectRoot);
 
-        String outputTemplate = "zsh";
+        String outputTemplate = "sh";
         File outputFile = new File(projectRoot, "project-env-output.sh");
 
         var output = executeProjectEnvShell(
@@ -75,7 +75,7 @@ abstract class AbstractProjectEnvShellTest {
         copyResourceToTarget("settings-user.xml", projectRoot);
         File configFile = copyResourceToTarget("project-env.toml", projectRoot);
 
-        String outputTemplate = "zsh";
+        String outputTemplate = "sh";
 
         var output = executeProjectEnvShell(
                 pathElement,

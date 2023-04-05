@@ -53,8 +53,7 @@ public class ProjectEnvFeature implements Feature {
             // register map type since it is the main model object
             registerClassForReflection(Map.class);
 
-            registerTemplate("github-actions.peb");
-            registerTemplate("zsh.peb");
+            registerTemplate("sh.peb");
             registerTemplate("cygwin.peb");
         } catch (IOException e) {
             throw new IllegalStateException("failed to register templates for usage in native-image");
