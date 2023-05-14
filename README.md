@@ -10,6 +10,10 @@ The Project-Env Shell integration application allows to use tools setup by the P
 ### Homebrew
 `brew install --cask project-env/tap/project-env-shell`
 
+### Winget
+
+`winget install ProjectEnv.ProjectEnvShell`
+
 ## Shell integration examples
 
 ### Unix shell
