@@ -32,7 +32,7 @@
         <graalvm.version>22.3.1</graalvm.version>
         <junit-jupiter.version>5.9.3</junit-jupiter.version>
         <assertj-core.version>3.24.2</assertj-core.version>
-        <pebble.version>3.2.0</pebble.version>
+        <pebble.version>3.2.2</pebble.version>
         <slf4j.version>2.0.7</slf4j.version>
         <reflections.version>0.9.11</reflections.version>
         <commons-lang3.version>3.12.0</commons-lang3.version>
