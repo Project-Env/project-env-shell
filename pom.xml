@@ -40,7 +40,7 @@
         <mockito-inline.version>5.2.0</mockito-inline.version>
         <gson.version>2.10.1</gson.version>
 
-        <flatten-maven-plugin.version>1.4.1</flatten-maven-plugin.version>
+        <flatten-maven-plugin.version>1.6.0</flatten-maven-plugin.version>
         <maven-compiler-plugin.version>3.11.0</maven-compiler-plugin.version>
         <maven-surefire-plugin.version>3.0.0</maven-surefire-plugin.version>
         <maven-failsafe-plugin.version>3.0.0</maven-failsafe-plugin.version>
