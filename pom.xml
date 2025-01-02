@@ -31,7 +31,7 @@
         <immutable.version>2.9.3</immutable.version>
         <graalvm.version>22.3.1</graalvm.version>
         <junit-jupiter.version>5.10.0</junit-jupiter.version>
-        <assertj-core.version>3.24.2</assertj-core.version>
+        <assertj-core.version>3.27.1</assertj-core.version>
         <pebble.version>3.2.0</pebble.version>
         <slf4j.version>2.0.7</slf4j.version>
         <reflections.version>0.9.11</reflections.version>
